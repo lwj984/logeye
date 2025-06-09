@@ -12,19 +12,19 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
             background: linear-gradient(135deg, #1a2a6c, #2c3e50);
             color: #fff;
             min-height: 100vh;
             padding: 20px;
         }
-        
+
         .container {
             max-width: 1600px;
             margin: 0 auto;
         }
-        
+
         header {
             text-align: center;
             margin-bottom: 30px;
@@ -33,7 +33,7 @@
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
-        
+
         h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
@@ -42,7 +42,7 @@
             -webkit-text-fill-color: transparent;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
-        
+
         .subtitle {
             font-size: 1.2rem;
             color: #bbb;
@@ -50,14 +50,14 @@
             margin: 0 auto;
             line-height: 1.6;
         }
-        
+
         .tabs {
             display: flex;
             justify-content: center;
             margin-bottom: 20px;
             gap: 10px;
         }
-        
+
         .tab-btn {
             background: rgba(40, 40, 60, 0.7);
             color: #4facfe;
@@ -68,17 +68,17 @@
             font-size: 1rem;
             transition: all 0.3s ease;
         }
-        
+
         .tab-btn.active {
             background: linear-gradient(90deg, #4facfe, #00f2fe);
             color: white;
             box-shadow: 0 0 15px rgba(79, 172, 254, 0.5);
         }
-        
+
         .tab-btn:hover:not(.active) {
             background: rgba(60, 60, 90, 0.7);
         }
-        
+
         .data-source-section {
             display: none;
             background: rgba(30, 30, 50, 0.7);
@@ -88,23 +88,23 @@
             margin-bottom: 30px;
             transition: all 0.3s ease;
         }
-        
+
         .data-source-section.active {
             display: block;
         }
-        
+
         .form-group {
             margin-bottom: 20px;
         }
-        
+
         label {
             display: block;
             margin-bottom: 8px;
             color: #4facfe;
             font-weight: 500;
         }
-        
-        input[type="text"], 
+
+        input[type="text"],
         input[type="date"],
         textarea {
             width: 100%;
@@ -115,22 +115,22 @@
             color: #fff;
             font-size: 1rem;
         }
-        
+
         textarea {
             min-height: 100px;
             resize: vertical;
             font-family: monospace;
         }
-        
+
         .date-group {
             display: flex;
             gap: 15px;
         }
-        
+
         .date-group .form-group {
             flex: 1;
         }
-        
+
         .upload-btn, .fetch-btn {
             background: linear-gradient(90deg, #4facfe, #00f2fe);
             color: white;
@@ -144,12 +144,12 @@
             display: block;
             margin: 20px auto 0;
         }
-        
+
         .upload-btn:hover, .fetch-btn:hover {
             transform: scale(1.05);
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
         }
-        
+
         .visualization-section {
             display: none;
             background: rgba(20, 20, 30, 0.8);
@@ -158,7 +158,7 @@
             margin-top: 30px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
         }
-        
+
         .controls {
             display: flex;
             justify-content: space-between;
@@ -166,33 +166,33 @@
             flex-wrap: wrap;
             gap: 15px;
         }
-        
+
         .service-legend {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             align-items: center;
         }
-        
+
         .legend-item {
             display: flex;
             align-items: center;
             margin-right: 15px;
             font-size: 0.9rem;
         }
-        
+
         .legend-color {
             width: 20px;
             height: 20px;
             border-radius: 4px;
             margin-right: 5px;
         }
-        
+
         .zoom-controls {
             display: flex;
             gap: 10px;
         }
-        
+
         .zoom-controls button {
             background: rgba(100, 100, 150, 0.3);
             color: white;
@@ -202,12 +202,12 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
-        
+
         .zoom-controls button:hover {
             background: rgba(100, 100, 150, 0.5);
             transform: translateY(-2px);
         }
-        
+
         #visualization {
             width: 100%;
             height: 600px;
@@ -217,7 +217,7 @@
             position: relative;
             border: 1px solid #4facfe;
         }
-        
+
         .tooltip {
             position: fixed;
             top: 50%;
@@ -227,7 +227,9 @@
             border: 1px solid #4facfe;
             border-radius: 10px;
             padding: 20px;
-            max-width: 700px;
+            /* 增加50%宽度 */
+            max-width: 1050px;
+            width: 90%;
             z-index: 100;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
             display: none;
@@ -238,7 +240,7 @@
             white-space: pre-wrap;
             overflow-wrap: break-word;
         }
-        
+
         .tooltip-header {
             font-weight: bold;
             margin-bottom: 15px;
@@ -247,12 +249,12 @@
             border-bottom: 1px solid #4facfe;
             padding-bottom: 10px;
         }
-        
+
         .tooltip-content {
             max-height: 400px;
             overflow-y: auto;
         }
-        
+
         .tooltip-close {
             position: absolute;
             top: 10px;
@@ -263,22 +265,22 @@
             font-size: 1.2rem;
             cursor: pointer;
         }
-        
+
         .tooltip-close:hover {
             color: #fff;
         }
-        
+
         .field-name {
             color: #4facfe;
             font-weight: bold;
             display: inline-block;
             min-width: 140px;
         }
-        
+
         .field-value {
             color: #fff;
         }
-        
+
         .info-panel {
             margin-top: 25px;
             padding: 20px;
@@ -287,13 +289,13 @@
             font-size: 0.9rem;
             line-height: 1.6;
         }
-        
+
         .info-title {
             color: #4facfe;
             margin-bottom: 10px;
             font-weight: bold;
         }
-        
+
         .loading-indicator {
             display: none;
             text-align: center;
@@ -301,7 +303,7 @@
             color: #4facfe;
             font-size: 1.2rem;
         }
-        
+
         .spinner {
             border: 4px solid rgba(79, 172, 254, 0.3);
             border-top: 4px solid #4facfe;
@@ -311,12 +313,12 @@
             animation: spin 1s linear infinite;
             margin: 0 auto 15px;
         }
-        
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        
+
         .status-badge {
             background: rgba(79, 172, 254, 0.2);
             border: 1px solid #4facfe;
@@ -326,36 +328,62 @@
             margin-top: 10px;
             display: inline-block;
         }
-        
+
+        /* 优化：API输入行 */
+        .api-input-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .api-input-group {
+            flex: 1;
+        }
+
+        /* 优化：时间轴行背景 */
+        .timeline-row {
+            fill: rgba(255, 255, 255, 0.03);
+        }
+
+        .timeline-row:nth-child(even) {
+            fill: rgba(79, 172, 254, 0.05);
+        }
+
         @media (max-width: 768px) {
             .controls {
                 flex-direction: column;
             }
-            
+
             .service-legend {
                 justify-content: center;
             }
-            
+
             .zoom-controls {
                 display: flex;
                 justify-content: center;
             }
-            
+
             #visualization {
                 height: 400px;
             }
-            
+
             .tooltip {
                 width: 90%;
                 max-height: 80vh;
             }
-            
+
             .date-group {
                 flex-direction: column;
                 gap: 10px;
             }
+
+            /* 响应式：小屏幕下垂直排列输入 */
+            .api-input-row {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
-        
+
         /* Electron窗口控制栏 */
         .electron-header {
             -webkit-app-region: drag;
@@ -369,18 +397,18 @@
             right: 0;
             z-index: 1000;
         }
-        
+
         .electron-title {
             font-size: 14px;
             color: #4facfe;
             font-weight: 500;
         }
-        
+
         .electron-controls {
             -webkit-app-region: no-drag;
             display: flex;
         }
-        
+
         .electron-btn {
             background: none;
             border: none;
@@ -391,814 +419,829 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        
+
         .electron-btn:hover {
             color: #fff;
             background: rgba(255, 255, 255, 0.1);
         }
-        
+
         .electron-btn.minimize:hover {
             background: rgba(79, 172, 254, 0.2);
         }
-        
+
         .electron-btn.close:hover {
             background: rgba(255, 80, 80, 0.5);
         }
-        
+
         body.electron {
             padding-top: 40px;
         }
     </style>
 </head>
 <body class="electron">
-    <!-- Electron窗口控制栏 -->
-    <div class="electron-header">
-        <div class="electron-title">日志追踪可视化工具 - 桌面版</div>
-        <div class="electron-controls">
-            <button class="electron-btn minimize" id="minimize-btn">−</button>
-            <button class="electron-btn close" id="close-btn">×</button>
+<!-- Electron窗口控制栏 -->
+<div class="electron-header">
+    <div class="electron-title">日志追踪可视化工具 - 优化版</div>
+    <div class="electron-controls">
+        <button class="electron-btn minimize" id="minimize-btn">−</button>
+        <button class="electron-btn close" id="close-btn">×</button>
+    </div>
+</div>
+
+<div class="container">
+    <header>
+        <h1>日志追踪可视化工具</h1>
+        <p class="subtitle">优化版 - 默认API模式 | 紧凑输入 | 增强时间轴 | 大尺寸工具提示</p>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn" data-tab="file-upload">文件上传</button>
+        <!-- 默认激活API获取标签 -->
+        <button class="tab-btn active" data-tab="api-fetch">API获取</button>
+    </div>
+
+    <div class="data-source-section" id="file-upload-section">
+        <div class="upload-section" id="drop-area">
+            <div class="upload-icon">📊</div>
+            <p class="upload-text">拖放日志文件到此处，或点击下方按钮选择文件</p>
+            <input type="file" id="file-input" class="file-input" accept=".json,.log,.txt">
+            <button class="upload-btn" id="upload-btn">选择日志文件</button>
         </div>
     </div>
-    
-    <div class="container">
-        <header>
-            <h1>日志追踪可视化工具</h1>
-            <p class="subtitle">桌面版应用解决跨域问题！上传日志文件或从API获取数据，可视化展示分布式追踪的时间轴树状结构。</p>
-        </header>
-        
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="file-upload">文件上传</button>
-            <button class="tab-btn" data-tab="api-fetch">API获取</button>
-        </div>
-        
-        <div class="data-source-section active" id="file-upload-section">
-            <div class="upload-section" id="drop-area">
-                <div class="upload-icon">📊</div>
-                <p class="upload-text">拖放日志文件到此处，或点击下方按钮选择文件</p>
-                <input type="file" id="file-input" class="file-input" accept=".json,.log,.txt">
-                <button class="upload-btn" id="upload-btn">选择日志文件</button>
-            </div>
-        </div>
-        
-        <div class="data-source-section" id="api-fetch-section">
-            <div class="form-group">
+
+    <div class="data-source-section active" id="api-fetch-section">
+        <!-- 优化：API输入放在一行 -->
+        <div class="api-input-row">
+            <div class="api-input-group">
                 <label for="cookie-input">Cookie:</label>
-                <textarea id="cookie-input" placeholder="粘贴完整的Cookie字符串"></textarea>
+                <input type="text" id="cookie-input" placeholder="粘贴Cookie字符串">
             </div>
-            
-            <div class="form-group">
+
+            <div class="api-input-group">
                 <label for="csrf-token-input">X-CSRF-Token:</label>
                 <input type="text" id="csrf-token-input" placeholder="输入CSRF Token">
             </div>
-            
-            <div class="form-group">
+
+            <div class="api-input-group">
                 <label for="trace-id-input">Trace ID:</label>
                 <input type="text" id="trace-id-input" placeholder="输入Trace ID">
             </div>
-            
-            <div class="status-badge">
-                时间范围：自动设置为最近一周（UTC时间）
-            </div>
-            
-            <button class="fetch-btn" id="fetch-btn">获取日志数据</button>
         </div>
-        
-        <div class="loading-indicator" id="loading-indicator">
-            <div class="spinner"></div>
-            <p>正在获取日志数据，请稍候...</p>
+
+        <div class="status-badge">
+            时间范围：自动设置为最近一周（UTC时间）
         </div>
-        
-        <div class="visualization-section" id="visualization-section">
-            <div class="controls">
-                <div class="service-legend" id="legend"></div>
-                <div class="zoom-controls">
-                    <button id="zoom-in">放大</button>
-                    <button id="zoom-out">缩小</button>
-                    <button id="reset-view">重置视图</button>
-                </div>
-            </div>
-            <div id="visualization"></div>
-            
-            <div class="info-panel">
-                <div class="info-title">桌面版优势</div>
-                <p>• 解决跨域问题，可直接访问API获取日志数据</p>
-                <p>• 支持拖拽文件上传，操作更便捷</p>
-                <p>• 独立窗口运行，不依赖浏览器环境</p>
-                <p>• 内置示例数据，可快速体验功能</p>
-                <p>• 支持打包为可执行文件，一键安装使用</p>
-            </div>
-        </div>
+
+        <button class="fetch-btn" id="fetch-btn">获取日志数据</button>
     </div>
 
-    <div class="tooltip" id="tooltip">
-        <button class="tooltip-close">&times;</button>
-        <div class="tooltip-header">日志详情</div>
-        <div class="tooltip-content" id="tooltip-content"></div>
+    <div class="loading-indicator" id="loading-indicator">
+        <div class="spinner"></div>
+        <p>正在获取日志数据，请稍候...</p>
     </div>
 
-    <script>
-        // 示例日志数据（如果用户没有上传文件）
-        const sampleLogs = [
-            {
-                "time": "2025-06-04 11:19:58.535",
-                "message": "WEB >> Request 172.31.123.252 POST http://172.31.123.219:8001/aurora/v1/distributor/estimate/startDistributorEstimates",
-                "span_id": "17a96780fcecec2a",
-                "parent_span_id": "ed23a46dc4b802aa",
-                "__tag__:_container_name_": "mars-aurora"
-            },
-            {
-                "time": "2025-06-04 11:19:58.537",
-                "message": "Feign ==> Request [CaoCaoFeignMicroServer#estimate] GET https://csp.caocaokeji.cn/v2/common/estimatePriceWithDetail",
-                "span_id": "0cd5612f5f3c7cae",
-                "parent_span_id": "e935560676d7024b",
-                "__tag__:_container_name_": "mars-aurora"
-            },
-            {
-                "time": "2025-06-04 11:19:58.758",
-                "message": "Feign <== Response 220ms 200 GET https://csp.caocaokeji.cn/v2/common/estimatePriceWithDetail",
-                "span_id": "0cd5612f5f3c7cae",
-                "parent_span_id": "e935560676d7024b",
-                "__tag__:_container_name_": "mars-aurora"
-            },
-            {
-                "time": "2025-06-04 11:19:58.759",
-                "message": "Feign ==> Request [CaoCaoFeignMicroServer#queryMeterRuleByEstimateKey] POST https://csp.caocaokeji.cn/v2/common/queryMeterRuleByEstimateKey",
-                "span_id": "7c79521eb54381e7",
-                "parent_span_id": "e935560676d7024b",
-                "__tag__:_container_name_": "mars-aurora"
-            },
-            {
-                "time": "2025-06-04 11:19:58.801",
-                "message": "Feign <== Response 41ms 200 POST https://csp.caocaokeji.cn/v2/common/queryMeterRuleByEstimateKey",
-                "span_id": "7c79521eb54381e7",
-                "parent_span_id": "e935560676d7024b",
-                "__tag__:_container_name_": "mars-aurora"
-            },
-            {
-                "time": "2025-06-04 11:19:58.801",
-                "message": "[API success]. platform = caocao,httCode = 200, requestUrl = https://csp.caocaokeji.cn//v2/common/queryMeterRuleByEstimateKey",
-                "span_id": "e935560676d7024b",
-                "parent_span_id": "17a96780fcecec2a",
-                "__tag__:_container_name_": "mars-aurora"
-            },
-            {
-                "time": "2025-06-04 11:19:58.803",
-                "message": "预估抽佣信息：{抽佣后分销商预估总金额=1001, 流量方抽佣比例=9, 分销商灵犀抽佣比例=9...}",
-                "span_id": "e935560676d7024b",
-                "parent_span_id": "17a96780fcecec2a",
-                "__tag__:_container_name_": "mars-aurora"
-            },
-            {
-                "time": "2025-06-04 11:19:58.804",
-                "message": "[定价预估]检查批次中任务。(inquiryOrderNo:850333054145101825,priceType:0,appKey:1589df610a5a19ae)",
-                "span_id": "17a96780fcecec2a",
-                "parent_span_id": "ed23a46dc4b802aa",
-                "__tag__:_container_name_": "mars-aurora"
-            },
-            {
-                "time": "2025-06-04 11:19:58.804",
-                "message": "[定价预估]检查批次中任务，尝试触发复制逻辑",
-                "span_id": "17a96780fcecec2a",
-                "parent_span_id": "ed23a46dc4b802aa",
-                "__tag__:_container_name_": "mars-aurora"
-            },
-            {
-                "time": "2025-06-04 11:19:58.805",
-                "message": "[定价预估]当前预估任务执行完成，以预估单号维度聚合结果",
-                "span_id": "17a96780fcecec2a",
-                "parent_span_id": "ed23a46dc4b802aa",
-                "__tag__:_container_name_": "mars-aurora"
-            },
-            {
-                "time": "2025-06-04 11:19:58.805",
-                "message": "WEB <<< Response 270ms 200 POST http://172.31.123.219:8001/aurora/v1/distributor/estimate/startDistributorEstimates",
-                "span_id": "17a96780fcecec2a",
-                "parent_span_id": "ed23a46dc4b802aa",
-                "__tag__:_container_name_": "mars-aurora"
-            },
-            {
-                "time": "2025-06-04 11:19:58.529",
-                "message": "WEB >>> Request 172.31.110.233 POST http://t3-quaoar.lingxichuxing.com/openapi/order/estimateinfo",
-                "span_id": "eeadf3f4566e2a91",
-                "parent_span_id": "",
-                "__tag__:_container_name_": "mars-kylin"
-            },
-            {
-                "time": "2025-06-04 11:19:58.532",
-                "message": "[DistributorInquiryServiceImpl][distributorEstimate][startDistributorEstimates]分销商预估入参",
-                "span_id": "e7e3c19efc61c80b",
-                "parent_span_id": "eeadf3f4566e2a91",
-                "__tag__:_container_name_": "mars-kylin"
-            },
-            {
-                "time": "2025-06-04 11:19:58.532",
-                "message": "Feign ==> Request [AuroraDistributorOrderServiceClient#startDistributorEstimates] POST http://aurora/aurora/v1/distributor/estimate/startDistributorEstimates",
-                "span_id": "ed23a46dc4b802aa",
-                "parent_span_id": "e7e3c19efc61c80b",
-                "__tag__:_container_name_": "mars-kylin"
-            },
-            {
-                "time": "2025-06-04 11:19:58.805",
-                "message": "Feign <== Response 271ms 200 POST http://172.31.123.219:8001/aurora/v1/distributor/estimate/startDistributorEstimates",
-                "span_id": "ed23a46dc4b802aa",
-                "parent_span_id": "e7e3c19efc61c80b",
-                "__tag__:_container_name_": "mars-kylin"
-            },
-            {
-                "time": "2025-06-04 11:19:58.805",
-                "message": "[DistributorInquiryServiceImpl][distributorEstimate][startDistributorEstimates]分销商预估返回值",
-                "span_id": "e7e3c19efc61c80b",
-                "parent_span_id": "eeadf3f4566e2a91",
-                "__tag__:_container_name_": "mars-kylin"
-            },
-            {
-                "time": "2025-06-04 11:19:58.808",
-                "message": "WEB <<< Response 279ms 200 POST http://t3-quaoar.lingxichuxing.com/openapi/order/estimateinfo",
-                "span_id": "eeadf3f4566e2a91",
-                "parent_span_id": "",
-                "__tag__:_container_name_": "mars-kylin"
-            }
-        ];
+    <div class="visualization-section" id="visualization-section">
+        <div class="controls">
+            <div class="service-legend" id="legend"></div>
+            <div class="zoom-controls">
+                <button id="zoom-in">放大</button>
+                <button id="zoom-out">缩小</button>
+                <button id="reset-view">重置视图</button>
+            </div>
+        </div>
+        <div id="visualization"></div>
 
-        // 初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            const fileInput = document.getElementById('file-input');
-            const uploadBtn = document.getElementById('upload-btn');
-            const dropArea = document.getElementById('drop-area');
-            const tooltip = document.getElementById('tooltip');
-            const tooltipContent = document.getElementById('tooltip-content');
-            const tooltipClose = document.querySelector('.tooltip-close');
-            const tabBtns = document.querySelectorAll('.tab-btn');
-            const fetchBtn = document.getElementById('fetch-btn');
-            const loadingIndicator = document.getElementById('loading-indicator');
-            
-            // 窗口控制按钮
-            if (window.electronAPI) {
-                document.getElementById('minimize-btn').addEventListener('click', () => {
-                    window.electronAPI.minimizeWindow();
-                });
-                
-                document.getElementById('close-btn').addEventListener('click', () => {
-                    window.electronAPI.closeWindow();
-                });
-            }
-            
-            // 标签切换
-            tabBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const tabId = this.getAttribute('data-tab');
-                    
-                    // 更新标签状态
-                    tabBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // 显示对应内容区域
-                    document.querySelectorAll('.data-source-section').forEach(section => {
-                        section.classList.remove('active');
-                    });
-                    document.getElementById(`${tabId}-section`).classList.add('active');
-                });
-            });
-            
-            // 上传按钮点击事件
-            uploadBtn.addEventListener('click', () => fileInput.click());
-            
-            // 文件选择事件
-            fileInput.addEventListener('change', function(e) {
-                if (this.files.length) {
-                    processFile(this.files[0]);
-                }
-            });
-            
-            // 拖放事件处理
-            dropArea.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                this.style.borderColor = '#00f2fe';
-                this.style.backgroundColor = 'rgba(40, 40, 60, 0.8)';
-            });
-            
-            dropArea.addEventListener('dragleave', function(e) {
-                e.preventDefault();
-                this.style.borderColor = '#4facfe';
-                this.style.backgroundColor = 'rgba(30, 30, 50, 0.7)';
-            });
-            
-            dropArea.addEventListener('drop', function(e) {
-                e.preventDefault();
-                this.style.borderColor = '#4facfe';
-                this.style.backgroundColor = 'rgba(30, 30, 50, 0.7)';
-                
-                if (e.dataTransfer.files.length) {
-                    processFile(e.dataTransfer.files[0]);
-                }
-            });
-            
-            // 关闭工具提示
-            tooltipClose.addEventListener('click', () => {
-                tooltip.style.display = 'none';
-            });
-            
-            // 获取日志数据
-            fetchBtn.addEventListener('click', fetchLogsFromAPI);
-            
-            // 默认使用示例数据
-            visualizeLogs(sampleLogs);
-        });
-        
-        // 处理上传的文件
-        function processFile(file) {
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                try {
-                    // 尝试解析JSON文件
-                    const logs = JSON.parse(e.target.result);
-                    visualizeLogs(logs);
-                } catch (error) {
-                    // 如果是JSON Lines格式（每行一个JSON对象）
-                    try {
-                        const lines = e.target.result.split('\n');
-                        const logs = lines.filter(line => line.trim()).map(line => JSON.parse(line));
-                        visualizeLogs(logs);
-                    } catch (error) {
-                        alert('文件解析失败，请确保是有效的JSON或JSON Lines格式');
-                        console.error('文件解析错误:', error);
-                    }
-                }
-            };
-            
-            reader.onerror = function() {
-                alert('读取文件时发生错误');
-            };
-            
-            reader.readAsText(file);
+        <div class="info-panel">
+            <div class="info-title">优化功能</div>
+            <p>• 默认显示API获取模式，更符合常用场景</p>
+            <p>• 输入表单紧凑布局，减少垂直空间占用</p>
+            <p>• 时间轴添加交替背景色，提高可读性</p>
+            <p>• 工具提示宽度增加50%，显示更多信息</p>
+            <p>• 优化时间轴显示，避免水平滚动条</p>
+        </div>
+    </div>
+</div>
+
+<div class="tooltip" id="tooltip">
+    <button class="tooltip-close">&times;</button>
+    <div class="tooltip-header">日志详情</div>
+    <div class="tooltip-content" id="tooltip-content"></div>
+</div>
+
+<script>
+    // 示例日志数据（如果用户没有上传文件）
+    const sampleLogs = [
+        {
+            "time": "2025-06-04 11:19:58.535",
+            "message": "WEB >> Request 172.31.123.252 POST http://172.31.123.219:8001/aurora/v1/distributor/estimate/startDistributorEstimates",
+            "span_id": "17a96780fcecec2a",
+            "parent_span_id": "ed23a46dc4b802aa",
+            "__tag__:_container_name_": "mars-aurora"
+        },
+        {
+            "time": "2025-06-04 11:19:58.537",
+            "message": "Feign ==> Request [CaoCaoFeignMicroServer#estimate] GET https://csp.caocaokeji.cn/v2/common/estimatePriceWithDetail",
+            "span_id": "0cd5612f5f3c7cae",
+            "parent_span_id": "e935560676d7024b",
+            "__tag__:_container_name_": "mars-aurora"
+        },
+        {
+            "time": "2025-06-04 11:19:58.758",
+            "message": "Feign <== Response 220ms 200 GET https://csp.caocaokeji.cn/v2/common/estimatePriceWithDetail",
+            "span_id": "0cd5612f5f3c7cae",
+            "parent_span_id": "e935560676d7024b",
+            "__tag__:_container_name_": "mars-aurora"
+        },
+        {
+            "time": "2025-06-04 11:19:58.759",
+            "message": "Feign ==> Request [CaoCaoFeignMicroServer#queryMeterRuleByEstimateKey] POST https://csp.caocaokeji.cn/v2/common/queryMeterRuleByEstimateKey",
+            "span_id": "7c79521eb54381e7",
+            "parent_span_id": "e935560676d7024b",
+            "__tag__:_container_name_": "mars-aurora"
+        },
+        {
+            "time": "2025-06-04 11:19:58.801",
+            "message": "Feign <== Response 41ms 200 POST https://csp.caocaokeji.cn/v2/common/queryMeterRuleByEstimateKey",
+            "span_id": "7c79521eb54381e7",
+            "parent_span_id": "e935560676d7024b",
+            "__tag__:_container_name_": "mars-aurora"
+        },
+        {
+            "time": "2025-06-04 11:19:58.801",
+            "message": "[API success]. platform = caocao,httCode = 200, requestUrl = https://csp.caocaokeji.cn//v2/common/queryMeterRuleByEstimateKey",
+            "span_id": "e935560676d7024b",
+            "parent_span_id": "17a96780fcecec2a",
+            "__tag__:_container_name_": "mars-aurora"
+        },
+        {
+            "time": "2025-06-04 11:19:58.803",
+            "message": "预估抽佣信息：{抽佣后分销商预估总金额=1001, 流量方抽佣比例=9, 分销商灵犀抽佣比例=9...}",
+            "span_id": "e935560676d7024b",
+            "parent_span_id": "17a96780fcecec2a",
+            "__tag__:_container_name_": "mars-aurora"
+        },
+        {
+            "time": "2025-06-04 11:19:58.804",
+            "message": "[定价预估]检查批次中任务。(inquiryOrderNo:850333054145101825,priceType:0,appKey:1589df610a5a19ae)",
+            "span_id": "17a96780fcecec2a",
+            "parent_span_id": "ed23a46dc4b802aa",
+            "__tag__:_container_name_": "mars-aurora"
+        },
+        {
+            "time": "2025-06-04 11:19:58.804",
+            "message": "[定价预估]检查批次中任务，尝试触发复制逻辑",
+            "span_id": "17a96780fcecec2a",
+            "parent_span_id": "ed23a46dc4b802aa",
+            "__tag__:_container_name_": "mars-aurora"
+        },
+        {
+            "time": "2025-06-04 11:19:58.805",
+            "message": "[定价预估]当前预估任务执行完成，以预估单号维度聚合结果",
+            "span_id": "17a96780fcecec2a",
+            "parent_span_id": "ed23a46dc4b802aa",
+            "__tag__:_container_name_": "mars-aurora"
+        },
+        {
+            "time": "2025-06-04 11:19:58.805",
+            "message": "WEB <<< Response 270ms 200 POST http://172.31.123.219:8001/aurora/v1/distributor/estimate/startDistributorEstimates",
+            "span_id": "17a96780fcecec2a",
+            "parent_span_id": "ed23a46dc4b802aa",
+            "__tag__:_container_name_": "mars-aurora"
+        },
+        {
+            "time": "2025-06-04 11:19:58.529",
+            "message": "WEB >>> Request 172.31.110.233 POST http://t3-quaoar.lingxichuxing.com/openapi/order/estimateinfo",
+            "span_id": "eeadf3f4566e2a91",
+            "parent_span_id": "",
+            "__tag__:_container_name_": "mars-kylin"
+        },
+        {
+            "time": "2025-06-04 11:19:58.532",
+            "message": "[DistributorInquiryServiceImpl][distributorEstimate][startDistributorEstimates]分销商预估入参",
+            "span_id": "e7e3c19efc61c80b",
+            "parent_span_id": "eeadf3f4566e2a91",
+            "__tag__:_container_name_": "mars-kylin"
+        },
+        {
+            "time": "2025-06-04 11:19:58.532",
+            "message": "Feign ==> Request [AuroraDistributorOrderServiceClient#startDistributorEstimates] POST http://aurora/aurora/v1/distributor/estimate/startDistributorEstimates",
+            "span_id": "ed23a46dc4b802aa",
+            "parent_span_id": "e7e3c19efc61c80b",
+            "__tag__:_container_name_": "mars-kylin"
+        },
+        {
+            "time": "2025-06-04 11:19:58.805",
+            "message": "Feign <== Response 271ms 200 POST http://172.31.123.219:8001/aurora/v1/distributor/estimate/startDistributorEstimates",
+            "span_id": "ed23a46dc4b802aa",
+            "parent_span_id": "e7e3c19efc61c80b",
+            "__tag__:_container_name_": "mars-kylin"
+        },
+        {
+            "time": "2025-06-04 11:19:58.805",
+            "message": "[DistributorInquiryServiceImpl][distributorEstimate][startDistributorEstimates]分销商预估返回值",
+            "span_id": "e7e3c19efc61c80b",
+            "parent_span_id": "eeadf3f4566e2a91",
+            "__tag__:_container_name_": "mars-kylin"
+        },
+        {
+            "time": "2025-06-04 11:19:58.808",
+            "message": "WEB <<< Response 279ms 200 POST http://t3-quaoar.lingxichuxing.com/openapi/order/estimateinfo",
+            "span_id": "eeadf3f4566e2a91",
+            "parent_span_id": "",
+            "__tag__:_container_name_": "mars-kylin"
         }
-        
-        // 从API获取日志
-        async function fetchLogsFromAPI() {
-            const cookie = document.getElementById('cookie-input').value.trim();
-            const csrfToken = document.getElementById('csrf-token-input').value.trim();
-            const traceId = document.getElementById('trace-id-input').value.trim();
-            
-            // 验证输入
-            if (!cookie || !csrfToken || !traceId) {
-                alert('请填写所有必填字段');
-                return;
+    ];
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.getElementById('file-input');
+        const uploadBtn = document.getElementById('upload-btn');
+        const dropArea = document.getElementById('drop-area');
+        const tooltip = document.getElementById('tooltip');
+        const tooltipContent = document.getElementById('tooltip-content');
+        const tooltipClose = document.querySelector('.tooltip-close');
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const fetchBtn = document.getElementById('fetch-btn');
+        const loadingIndicator = document.getElementById('loading-indicator');
+
+        // 窗口控制按钮
+        if (window.electronAPI) {
+            document.getElementById('minimize-btn').addEventListener('click', () => {
+                window.electronAPI.minimizeWindow();
+            });
+
+            document.getElementById('close-btn').addEventListener('click', () => {
+                window.electronAPI.closeWindow();
+            });
+        }
+
+        // 标签切换
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tabId = this.getAttribute('data-tab');
+
+                // 更新标签状态
+                tabBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                // 显示对应内容区域
+                document.querySelectorAll('.data-source-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById(`${tabId}-section`).classList.add('active');
+            });
+        });
+
+        // 上传按钮点击事件
+        uploadBtn.addEventListener('click', () => fileInput.click());
+
+        // 文件选择事件
+        fileInput.addEventListener('change', function(e) {
+            if (this.files.length) {
+                processFile(this.files[0]);
             }
-            
-            // 计算时间范围：一周前0点（UTC）到当前时间
-            const now = new Date();
-            const oneWeekAgo = new Date();
-            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-            
-            // 设置到0点
-            oneWeekAgo.setUTCHours(0, 0, 0, 0);
-            
-            const fromTimestamp = Math.floor(oneWeekAgo.getTime() / 1000);
-            const toTimestamp = Math.floor(now.getTime() / 1000);
-            
-            // 显示加载指示器
-            const loadingIndicator = document.getElementById('loading-indicator');
-            loadingIndicator.style.display = 'block';
-            
+        });
+
+        // 拖放事件处理
+        dropArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#00f2fe';
+            this.style.backgroundColor = 'rgba(40, 40, 60, 0.8)';
+        });
+
+        dropArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#4facfe';
+            this.style.backgroundColor = 'rgba(30, 30, 50, 0.7)';
+        });
+
+        dropArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#4facfe';
+            this.style.backgroundColor = 'rgba(30, 30, 50, 0.7)';
+
+            if (e.dataTransfer.files.length) {
+                processFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        // 关闭工具提示
+        tooltipClose.addEventListener('click', () => {
+            tooltip.style.display = 'none';
+        });
+
+        // 获取日志数据
+        fetchBtn.addEventListener('click', fetchLogsFromAPI);
+
+        // 默认使用示例数据
+        visualizeLogs(sampleLogs);
+    });
+
+    // 处理上传的文件
+    function processFile(file) {
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
             try {
-                // 使用Electron代理请求
-                if (!window.electronAPI) {
-                    throw new Error('Electron API不可用');
-                }
-                
-                const logs = await window.electronAPI.fetchLogs(
-                    cookie, 
-                    csrfToken, 
-                    traceId, 
-                    fromTimestamp, 
-                    toTimestamp
-                );
-                
-                if (!logs || logs.length === 0) {
-                    alert('未获取到日志数据');
-                    return;
-                }
-                
+                // 尝试解析JSON文件
+                const logs = JSON.parse(e.target.result);
                 visualizeLogs(logs);
             } catch (error) {
-                console.error('获取日志数据失败:', error);
-                alert('获取日志数据失败: ' + error.message);
-            } finally {
-                // 隐藏加载指示器
-                loadingIndicator.style.display = 'none';
+                // 如果是JSON Lines格式（每行一个JSON对象）
+                try {
+                    const lines = e.target.result.split('\n');
+                    const logs = lines.filter(line => line.trim()).map(line => JSON.parse(line));
+                    visualizeLogs(logs);
+                } catch (error) {
+                    alert('文件解析失败，请确保是有效的JSON或JSON Lines格式');
+                    console.error('文件解析错误:', error);
+                }
             }
+        };
+
+        reader.onerror = function() {
+            alert('读取文件时发生错误');
+        };
+
+        reader.readAsText(file);
+    }
+
+    // 从API获取日志
+    async function fetchLogsFromAPI() {
+        const cookie = document.getElementById('cookie-input').value.trim();
+        const csrfToken = document.getElementById('csrf-token-input').value.trim();
+        const traceId = document.getElementById('trace-id-input').value.trim();
+
+        // 验证输入
+        if (!cookie || !csrfToken || !traceId) {
+            alert('请填写所有必填字段');
+            return;
         }
-        
-        // 可视化日志
-        function visualizeLogs(logs) {
-            // 显示可视化区域
-            document.getElementById('visualization-section').style.display = 'block';
-            
-            // 清空之前的可视化
-            const container = document.getElementById('visualization');
-            container.innerHTML = '';
-            
-            // 处理日志数据
-            const processedLogs = processLogData(logs);
-            
-            // 创建图例
-            createLegend(processedLogs.services);
-            
-            // 使用D3进行可视化
-            const margin = {top: 50, right: 30, bottom: 80, left: 200};
-            const width = container.clientWidth - margin.left - margin.right;
-            const height = container.clientHeight - margin.top - margin.bottom;
-            
-            const svg = d3.select(container)
-                .append('svg')
-                .attr('width', width + margin.left + margin.right)
-                .attr('height', height + margin.top + margin.bottom)
-                .append('g')
-                .attr('transform', `translate(${margin.left},${margin.top})`);
-            
-            // 设置缩放行为
-            const zoom = d3.zoom()
-                .scaleExtent([0.5, 8])
-                .on('zoom', zoomed);
-            
-            svg.call(zoom);
-            
-            // 创建时间比例尺
-            const timeScale = d3.scaleLinear()
-                .domain([processedLogs.minTime, processedLogs.maxTime])
-                .range([0, width]);
-            
-            // 创建垂直位置比例尺
-            const yScale = d3.scaleLinear()
-                .domain([0, processedLogs.maxYPos])
-                .range([20, height - 20]); // 增加垂直边距
-            
-            // 绘制时间轴
-            drawTimeline(svg, timeScale, height, processedLogs);
-            
-            // 绘制日志点
-            drawLogPoints(svg, timeScale, yScale, processedLogs);
-            
-            // 绘制连接线
-            drawConnections(svg, timeScale, yScale, processedLogs);
-            
-            // 保存缩放相关的元素引用
-            window.zoomableSvg = svg;
-            window.zoomBehavior = zoom;
-            window.timeScale = timeScale;
-            window.processedLogs = processedLogs;
-            window.height = height;
-            
-            // 缩放函数
-            function zoomed(event) {
-                const transform = event.transform;
-                const newXScale = transform.rescaleX(timeScale);
-                
-                // 更新时间轴
-                svg.selectAll('.timeline')
-                    .attr('x1', d => newXScale(d))
-                    .attr('x2', d => newXScale(d));
-                
-                // 更新时间标签
-                svg.selectAll('.time-label')
-                    .attr('x', d => newXScale(d))
-                    .text(d => {
-                        const date = new Date(d);
-                        return `${date.getSeconds()}.${date.getMilliseconds().toString().padStart(3, '0')}s`;
-                    });
-                
-                // 更新时间轴标题
-                svg.select('.time-title')
-                    .attr('x', newXScale(processedLogs.minTime + (processedLogs.maxTime - processedLogs.minTime) / 2));
-                
-                // 更新日志点
-                svg.selectAll('.log-point')
-                    .attr('cx', d => newXScale(d.timestamp));
-                
-                // 更新连接线
-                svg.selectAll('.connection')
-                    .attr('x1', d => newXScale(d.parentTime))
-                    .attr('x2', d => newXScale(d.childTime));
+
+        // 计算时间范围：一周前0点（UTC）到当前时间
+        const now = new Date();
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+        // 设置到0点
+        oneWeekAgo.setUTCHours(0, 0, 0, 0);
+
+        const fromTimestamp = Math.floor(oneWeekAgo.getTime() / 1000);
+        const toTimestamp = Math.floor(now.getTime() / 1000);
+
+        // 显示加载指示器
+        const loadingIndicator = document.getElementById('loading-indicator');
+        loadingIndicator.style.display = 'block';
+
+        try {
+            // 使用Electron代理请求
+            if (!window.electronAPI) {
+                throw new Error('Electron API不可用');
             }
-            
-            // 缩放功能
-            document.getElementById('zoom-in').addEventListener('click', zoomIn);
-            document.getElementById('zoom-out').addEventListener('click', zoomOut);
-            document.getElementById('reset-view').addEventListener('click', resetView);
-        }
-        
-        // 缩放功能实现
-        function zoomIn() {
-            if (window.zoomableSvg && window.zoomBehavior) {
-                window.zoomableSvg.transition().call(window.zoomBehavior.scaleBy, 1.5);
+
+            const logs = await window.electronAPI.fetchLogs(
+                cookie,
+                csrfToken,
+                traceId,
+                fromTimestamp,
+                toTimestamp
+            );
+
+            if (!logs || logs.length === 0) {
+                alert('未获取到日志数据');
+                return;
             }
+
+            visualizeLogs(logs);
+        } catch (error) {
+            console.error('获取日志数据失败:', error);
+            alert('获取日志数据失败: ' + error.message);
+        } finally {
+            // 隐藏加载指示器
+            loadingIndicator.style.display = 'none';
         }
-        
-        function zoomOut() {
-            if (window.zoomableSvg && window.zoomBehavior) {
-                window.zoomableSvg.transition().call(window.zoomBehavior.scaleBy, 0.75);
-            }
-        }
-        
-        function resetView() {
-            if (window.zoomableSvg && window.zoomBehavior) {
-                window.zoomableSvg.transition().call(window.zoomBehavior.transform, d3.zoomIdentity);
-            }
-        }
-        
+    }
+
+    // 可视化日志
+    function visualizeLogs(logs) {
+        // 显示可视化区域
+        document.getElementById('visualization-section').style.display = 'block';
+
+        // 清空之前的可视化
+        const container = document.getElementById('visualization');
+        container.innerHTML = '';
+
         // 处理日志数据
-        function processLogData(logs) {
-            // 解析时间
-            logs.forEach(log => {
-                const [datePart, timePart] = log.time.split(' ');
-                const [year, month, day] = datePart.split('-');
-                const [hms, ms] = timePart.split('.');
-                const [hour, minute, second] = hms.split(':');
-                
-                log.timestamp = new Date(
-                    parseInt(year), 
-                    parseInt(month) - 1, 
-                    parseInt(day), 
-                    parseInt(hour), 
-                    parseInt(minute), 
-                    parseInt(second), 
-                    parseInt(ms || '0')
-                ).getTime();
-            });
-            
-            // 排序日志
-            logs.sort((a, b) => a.timestamp - b.timestamp);
-            
-            // 获取时间范围
-            const minTime = logs[0].timestamp;
-            const maxTime = logs[logs.length - 1].timestamp;
-            
-            // 提取所有服务
-            const services = [...new Set(logs.map(log => log['__tag__:_container_name_']))];
-            
-            // 创建颜色映射
-            const colorScale = d3.scaleOrdinal(d3.schemeCategory10)
-                .domain(services);
-            
-            // 构建树结构
-            const spanMap = new Map();
-            const rootSpans = [];
-            
-            // 创建span节点
-            logs.forEach(log => {
-                if (!spanMap.has(log.span_id)) {
-                    spanMap.set(log.span_id, {
-                        id: log.span_id,
-                        parentId: log.parent_span_id,
-                        service: log['__tag__:_container_name_'],
-                        color: colorScale(log['__tag__:_container_name_']),
-                        logs: [],
-                        depth: 0
-                    });
-                }
-                
-                spanMap.get(log.span_id).logs.push({
-                    time: log.timestamp,
-                    message: log.message,
-                    raw: log
-                });
-            });
-            
-            // 计算深度和建立父子关系
-            spanMap.forEach(span => {
-                if (span.parentId && spanMap.has(span.parentId)) {
-                    const parent = spanMap.get(span.parentId);
-                    if (!parent.children) parent.children = [];
-                    parent.children.push(span);
-                    span.parent = parent;
-                } else {
-                    rootSpans.push(span);
-                }
-            });
-            
-            // 计算深度
-            function calculateDepth(node, depth) {
-                node.depth = depth;
-                if (node.children) {
-                    node.children.forEach(child => calculateDepth(child, depth + 1));
-                }
-            }
-            
-            rootSpans.forEach(root => calculateDepth(root, 0));
-            
-            // 计算最大深度
-            let maxDepth = 0;
-            spanMap.forEach(span => {
-                if (span.depth > maxDepth) maxDepth = span.depth;
-            });
-            
-            // 分配垂直位置
-            const verticalPositions = new Map();
-            let yPos = 0;
-            
-            function assignPosition(node) {
-                verticalPositions.set(node.id, yPos);
-                yPos += 1;
-                
-                if (node.children) {
-                    node.children.forEach(child => assignPosition(child));
-                }
-            }
-            
-            rootSpans.forEach(root => assignPosition(root));
-            
-            return {
-                logs,
-                spanMap,
-                rootSpans,
-                services,
-                minTime,
-                maxTime,
-                maxDepth,
-                maxYPos: yPos - 1, // 最大位置值
-                verticalPositions,
-                colorScale
-            };
-        }
-        
+        const processedLogs = processLogData(logs);
+
         // 创建图例
-        function createLegend(services) {
-            const legendContainer = document.getElementById('legend');
-            legendContainer.innerHTML = '';
-            
-            services.forEach(service => {
-                const color = d3.schemeCategory10[services.indexOf(service) % 10];
-                const item = document.createElement('div');
-                item.className = 'legend-item';
-                item.innerHTML = `
-                    <div class="legend-color" style="background-color:${color}"></div>
-                    <span>${service}</span>
-                `;
-                legendContainer.appendChild(item);
-            });
+        createLegend(processedLogs.services);
+
+        // 使用D3进行可视化
+        const margin = {top: 50, right: 30, bottom: 80, left: 200};
+        const width = container.clientWidth - margin.left - margin.right;
+        const height = container.clientHeight - margin.top - margin.bottom;
+
+        const svg = d3.select(container)
+            .append('svg')
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom)
+            .append('g')
+            .attr('transform', `translate(${margin.left},${margin.top})`);
+
+        // 设置缩放行为
+        const zoom = d3.zoom()
+            .scaleExtent([0.5, 8])
+            .on('zoom', zoomed);
+
+        svg.call(zoom);
+
+        // 创建时间比例尺
+        const timeScale = d3.scaleLinear()
+            .domain([processedLogs.minTime, processedLogs.maxTime])
+            .range([0, width]);
+
+        // 创建垂直位置比例尺
+        const yScale = d3.scaleLinear()
+            .domain([0, processedLogs.maxYPos])
+            .range([20, height - 20]); // 增加垂直边距
+
+        // 添加时间轴行背景（交替颜色）
+        const rowHeight = (height - 40) / processedLogs.maxYPos;
+        for (let i = 0; i <= processedLogs.maxYPos; i++) {
+            svg.append('rect')
+                .attr('class', 'timeline-row')
+                .attr('x', 0)
+                .attr('y', yScale(i) - rowHeight/2)
+                .attr('width', width)
+                .attr('height', rowHeight);
         }
-        
+
         // 绘制时间轴
-        function drawTimeline(svg, timeScale, height, data) {
-            // 绘制时间刻度
-            const timeTicks = d3.range(data.minTime, data.maxTime, (data.maxTime - data.minTime) / 10);
-            
+        drawTimeline(svg, timeScale, height, processedLogs);
+
+        // 绘制日志点
+        drawLogPoints(svg, timeScale, yScale, processedLogs);
+
+        // 绘制连接线
+        drawConnections(svg, timeScale, yScale, processedLogs);
+
+        // 保存缩放相关的元素引用
+        window.zoomableSvg = svg;
+        window.zoomBehavior = zoom;
+        window.timeScale = timeScale;
+        window.processedLogs = processedLogs;
+        window.height = height;
+
+        // 缩放函数
+        function zoomed(event) {
+            const transform = event.transform;
+            const newXScale = transform.rescaleX(timeScale);
+
+            // 更新时间轴
             svg.selectAll('.timeline')
-                .data(timeTicks)
-                .enter()
-                .append('line')
-                .attr('class', 'timeline')
-                .attr('x1', d => timeScale(d))
-                .attr('x2', d => timeScale(d))
-                .attr('y1', 0)
-                .attr('y2', height)
-                .attr('stroke', '#4facfe')
-                .attr('stroke-opacity', 0.1)
-                .attr('stroke-width', 1);
-            
-            // 添加时间标签
+                .attr('x1', d => newXScale(d))
+                .attr('x2', d => newXScale(d));
+
+            // 更新时间标签
             svg.selectAll('.time-label')
-                .data(timeTicks)
-                .enter()
-                .append('text')
-                .attr('class', 'time-label')
-                .attr('x', d => timeScale(d))
-                .attr('y', height + 20)
-                .attr('text-anchor', 'middle')
-                .attr('fill', '#aaa')
+                .attr('x', d => newXScale(d))
                 .text(d => {
                     const date = new Date(d);
                     return `${date.getSeconds()}.${date.getMilliseconds().toString().padStart(3, '0')}s`;
                 });
-            
-            // 添加时间轴标题
-            svg.append('text')
-                .attr('class', 'time-title')
-                .attr('x', timeScale(data.minTime + (data.maxTime - data.minTime) / 2))
-                .attr('y', height + 50)
-                .attr('text-anchor', 'middle')
-                .attr('fill', '#4facfe')
-                .text('时间轴（秒.毫秒）');
-        }
-        
-        // 绘制日志点
-        function drawLogPoints(svg, timeScale, yScale, data) {
-            const points = svg.selectAll('.log-point')
-                .data(data.logs)
-                .enter()
-                .append('circle')
-                .attr('class', 'log-point')
-                .attr('cx', d => timeScale(d.timestamp))
-                .attr('cy', d => {
-                    const yPos = data.verticalPositions.get(d.span_id) || 0;
-                    return yScale(yPos);
-                })
-                .attr('r', 6)
-                .attr('fill', d => data.colorScale(d['__tag__:_container_name_']))
-                .attr('stroke', '#fff')
-                .attr('stroke-width', 1)
-                .attr('data-log', d => JSON.stringify(d))
-                .on('mouseover', function(event, d) {
-                    d3.select(this).attr('r', 8);
-                })
-                .on('mouseout', function() {
-                    d3.select(this).attr('r', 6);
-                })
-                .on('click', function(event, d) {
-                    showTooltip(d);
-                });
-            
-            // 添加服务标签
-            data.spanMap.forEach(span => {
-                if (span.logs.length > 0) {
-                    const yPos = data.verticalPositions.get(span.id) || 0;
-                    svg.append('text')
-                        .attr('x', -10)
-                        .attr('y', yScale(yPos))
-                        .attr('text-anchor', 'end')
-                        .attr('fill', '#aaa')
-                        .text(span.service);
-                }
-            });
-        }
-        
-        // 绘制连接线
-        function drawConnections(svg, timeScale, yScale, data) {
-            const connections = [];
-            
-            data.spanMap.forEach(childSpan => {
-                if (childSpan.parent && data.spanMap.has(childSpan.parent.id)) {
-                    const parentSpan = childSpan.parent;
-                    
-                    // 找到父span的第一个日志
-                    const parentFirstLog = parentSpan.logs[0];
-                    
-                    // 找到子span的第一个日志
-                    const childFirstLog = childSpan.logs[0];
-                    
-                    if (parentFirstLog && childFirstLog) {
-                        connections.push({
-                            parentId: parentSpan.id,
-                            childId: childSpan.id,
-                            parentTime: parentFirstLog.time,
-                            childTime: childFirstLog.time,
-                            parentY: data.verticalPositions.get(parentSpan.id) || 0,
-                            childY: data.verticalPositions.get(childSpan.id) || 0
-                        });
-                    }
-                }
-            });
-            
+
+            // 更新时间轴标题
+            svg.select('.time-title')
+                .attr('x', newXScale(processedLogs.minTime + (processedLogs.maxTime - processedLogs.minTime) / 2));
+
+            // 更新日志点
+            svg.selectAll('.log-point')
+                .attr('cx', d => newXScale(d.timestamp));
+
+            // 更新连接线
             svg.selectAll('.connection')
-                .data(connections)
-                .enter()
-                .append('line')
-                .attr('class', 'connection')
-                .attr('x1', d => timeScale(d.parentTime))
-                .attr('y1', d => yScale(d.parentY))
-                .attr('x2', d => timeScale(d.childTime))
-                .attr('y2', d => yScale(d.childY))
-                .attr('stroke', '#4facfe')
-                .attr('stroke-opacity', 0.4)
-                .attr('stroke-width', 1)
-                .attr('marker-end', 'url(#arrowhead)');
-            
-            // 添加箭头标记
-            svg.append('defs').append('marker')
-                .attr('id', 'arrowhead')
-                .attr('viewBox', '-0 -5 10 10')
-                .attr('refX', 8)
-                .attr('refY', 0)
-                .attr('orient', 'auto')
-                .attr('markerWidth', 6)
-                .attr('markerHeight', 6)
-                .attr('xoverflow', 'visible')
-                .append('svg:path')
-                .attr('d', 'M 0,-5 L 10,0 L 0,5')
-                .attr('fill', '#4facfe')
-                .attr('stroke', 'none');
+                .attr('x1', d => newXScale(d.parentTime))
+                .attr('x2', d => newXScale(d.childTime));
         }
-        
-        // 显示工具提示
-        function showTooltip(log) {
-            const tooltip = document.getElementById('tooltip');
-            const tooltipContent = document.getElementById('tooltip-content');
-            
-            // 格式化日志信息
-            let content = '';
-            content += `<div><span class="field-name">时间:</span> <span class="field-value">${log.time}</span></div>`;
-            content += `<div><span class="field-name">服务:</span> <span class="field-value">${log['__tag__:_container_name_']}</span></div>`;
-            content += `<div><span class="field-name">Span ID:</span> <span class="field-value">${log.span_id}</span></div>`;
-            content += `<div><span class="field-name">Parent Span ID:</span> <span class="field-value">${log.parent_span_id || '无'}</span></div>`;
-            content += `<div><span class="field-name">消息内容:</span></div>`;
-            content += `<div class="field-value" style="margin-top:8px;">${log.message}</div>`;
-            
-            tooltipContent.innerHTML = content;
-            
-            // 居中显示工具提示
-            tooltip.style.display = 'block';
+
+        // 缩放功能
+        document.getElementById('zoom-in').addEventListener('click', zoomIn);
+        document.getElementById('zoom-out').addEventListener('click', zoomOut);
+        document.getElementById('reset-view').addEventListener('click', resetView);
+    }
+
+    // 缩放功能实现
+    function zoomIn() {
+        if (window.zoomableSvg && window.zoomBehavior) {
+            window.zoomableSvg.transition().call(window.zoomBehavior.scaleBy, 1.5);
         }
-    </script>
+    }
+
+    function zoomOut() {
+        if (window.zoomableSvg && window.zoomBehavior) {
+            window.zoomableSvg.transition().call(window.zoomBehavior.scaleBy, 0.75);
+        }
+    }
+
+    function resetView() {
+        if (window.zoomableSvg && window.zoomBehavior) {
+            window.zoomableSvg.transition().call(window.zoomBehavior.transform, d3.zoomIdentity);
+        }
+    }
+
+    // 处理日志数据
+    function processLogData(logs) {
+        // 解析时间
+        logs.forEach(log => {
+            const [datePart, timePart] = log.time.split(' ');
+            const [year, month, day] = datePart.split('-');
+            const [hms, ms] = timePart.split('.');
+            const [hour, minute, second] = hms.split(':');
+
+            log.timestamp = new Date(
+                parseInt(year),
+                parseInt(month) - 1,
+                parseInt(day),
+                parseInt(hour),
+                parseInt(minute),
+                parseInt(second),
+                parseInt(ms || '0')
+            ).getTime();
+        });
+
+        // 排序日志
+        logs.sort((a, b) => a.timestamp - b.timestamp);
+
+        // 获取时间范围
+        const minTime = logs[0].timestamp;
+        const maxTime = logs[logs.length - 1].timestamp;
+
+        // 提取所有服务
+        const services = [...new Set(logs.map(log => log['__tag__:_container_name_']))];
+
+        // 创建颜色映射
+        const colorScale = d3.scaleOrdinal(d3.schemeCategory10)
+            .domain(services);
+
+        // 构建树结构
+        const spanMap = new Map();
+        const rootSpans = [];
+
+        // 创建span节点
+        logs.forEach(log => {
+            if (!spanMap.has(log.span_id)) {
+                spanMap.set(log.span_id, {
+                    id: log.span_id,
+                    parentId: log.parent_span_id,
+                    service: log['__tag__:_container_name_'],
+                    color: colorScale(log['__tag__:_container_name_']),
+                    logs: [],
+                    depth: 0
+                });
+            }
+
+            spanMap.get(log.span_id).logs.push({
+                time: log.timestamp,
+                message: log.message,
+                raw: log
+            });
+        });
+
+        // 计算深度和建立父子关系
+        spanMap.forEach(span => {
+            if (span.parentId && spanMap.has(span.parentId)) {
+                const parent = spanMap.get(span.parentId);
+                if (!parent.children) parent.children = [];
+                parent.children.push(span);
+                span.parent = parent;
+            } else {
+                rootSpans.push(span);
+            }
+        });
+
+        // 计算深度
+        function calculateDepth(node, depth) {
+            node.depth = depth;
+            if (node.children) {
+                node.children.forEach(child => calculateDepth(child, depth + 1));
+            }
+        }
+
+        rootSpans.forEach(root => calculateDepth(root, 0));
+
+        // 计算最大深度
+        let maxDepth = 0;
+        spanMap.forEach(span => {
+            if (span.depth > maxDepth) maxDepth = span.depth;
+        });
+
+        // 分配垂直位置
+        const verticalPositions = new Map();
+        let yPos = 0;
+
+        function assignPosition(node) {
+            verticalPositions.set(node.id, yPos);
+            yPos += 1;
+
+            if (node.children) {
+                node.children.forEach(child => assignPosition(child));
+            }
+        }
+
+        rootSpans.forEach(root => assignPosition(root));
+
+        return {
+            logs,
+            spanMap,
+            rootSpans,
+            services,
+            minTime,
+            maxTime,
+            maxDepth,
+            maxYPos: yPos - 1, // 最大位置值
+            verticalPositions,
+            colorScale
+        };
+    }
+
+    // 创建图例
+    function createLegend(services) {
+        const legendContainer = document.getElementById('legend');
+        legendContainer.innerHTML = '';
+
+        services.forEach(service => {
+            const color = d3.schemeCategory10[services.indexOf(service) % 10];
+            const item = document.createElement('div');
+            item.className = 'legend-item';
+            item.innerHTML = `
+                <div class="legend-color" style="background-color:${color}"></div>
+                <span>${service}</span>
+            `;
+            legendContainer.appendChild(item);
+        });
+    }
+
+    // 绘制时间轴
+    function drawTimeline(svg, timeScale, height, data) {
+        // 绘制时间刻度
+        const timeTicks = d3.range(data.minTime, data.maxTime, (data.maxTime - data.minTime) / 10);
+
+        svg.selectAll('.timeline')
+            .data(timeTicks)
+            .enter()
+            .append('line')
+            .attr('class', 'timeline')
+            .attr('x1', d => timeScale(d))
+            .attr('x2', d => timeScale(d))
+            .attr('y1', 0)
+            .attr('y2', height)
+            .attr('stroke', '#4facfe')
+            .attr('stroke-opacity', 0.1)
+            .attr('stroke-width', 1);
+
+        // 添加时间标签
+        svg.selectAll('.time-label')
+            .data(timeTicks)
+            .enter()
+            .append('text')
+            .attr('class', 'time-label')
+            .attr('x', d => timeScale(d))
+            .attr('y', height + 20)
+            .attr('text-anchor', 'middle')
+            .attr('fill', '#aaa')
+            .text(d => {
+                const date = new Date(d);
+                return `${date.getSeconds()}.${date.getMilliseconds().toString().padStart(3, '0')}s`;
+            });
+
+        // 添加时间轴标题
+        svg.append('text')
+            .attr('class', 'time-title')
+            .attr('x', timeScale(data.minTime + (data.maxTime - data.minTime) / 2))
+            .attr('y', height + 50)
+            .attr('text-anchor', 'middle')
+            .attr('fill', '#4facfe')
+            .text('时间轴（秒.毫秒）');
+    }
+
+    // 绘制日志点
+    function drawLogPoints(svg, timeScale, yScale, data) {
+        const points = svg.selectAll('.log-point')
+            .data(data.logs)
+            .enter()
+            .append('circle')
+            .attr('class', 'log-point')
+            .attr('cx', d => timeScale(d.timestamp))
+            .attr('cy', d => {
+                const yPos = data.verticalPositions.get(d.span_id) || 0;
+                return yScale(yPos);
+            })
+            .attr('r', 6)
+            .attr('fill', d => data.colorScale(d['__tag__:_container_name_']))
+            .attr('stroke', '#fff')
+            .attr('stroke-width', 1)
+            .attr('data-log', d => JSON.stringify(d))
+            .on('mouseover', function(event, d) {
+                d3.select(this).attr('r', 8);
+            })
+            .on('mouseout', function() {
+                d3.select(this).attr('r', 6);
+            })
+            .on('click', function(event, d) {
+                showTooltip(d);
+            });
+
+        // 添加服务标签
+        data.spanMap.forEach(span => {
+            if (span.logs.length > 0) {
+                const yPos = data.verticalPositions.get(span.id) || 0;
+                svg.append('text')
+                    .attr('x', -10)
+                    .attr('y', yScale(yPos))
+                    .attr('text-anchor', 'end')
+                    .attr('fill', '#aaa')
+                    .text(span.service);
+            }
+        });
+    }
+
+    // 绘制连接线
+    function drawConnections(svg, timeScale, yScale, data) {
+        const connections = [];
+
+        data.spanMap.forEach(childSpan => {
+            if (childSpan.parent && data.spanMap.has(childSpan.parent.id)) {
+                const parentSpan = childSpan.parent;
+
+                // 找到父span的第一个日志
+                const parentFirstLog = parentSpan.logs[0];
+
+                // 找到子span的第一个日志
+                const childFirstLog = childSpan.logs[0];
+
+                if (parentFirstLog && childFirstLog) {
+                    connections.push({
+                        parentId: parentSpan.id,
+                        childId: childSpan.id,
+                        parentTime: parentFirstLog.time,
+                        childTime: childFirstLog.time,
+                        parentY: data.verticalPositions.get(parentSpan.id) || 0,
+                        childY: data.verticalPositions.get(childSpan.id) || 0
+                    });
+                }
+            }
+        });
+
+        svg.selectAll('.connection')
+            .data(connections)
+            .enter()
+            .append('line')
+            .attr('class', 'connection')
+            .attr('x1', d => timeScale(d.parentTime))
+            .attr('y1', d => yScale(d.parentY))
+            .attr('x2', d => timeScale(d.childTime))
+            .attr('y2', d => yScale(d.childY))
+            .attr('stroke', '#4facfe')
+            .attr('stroke-opacity', 0.4)
+            .attr('stroke-width', 1)
+            .attr('marker-end', 'url(#arrowhead)');
+
+        // 添加箭头标记
+        svg.append('defs').append('marker')
+            .attr('id', 'arrowhead')
+            .attr('viewBox', '-0 -5 10 10')
+            .attr('refX', 8)
+            .attr('refY', 0)
+            .attr('orient', 'auto')
+            .attr('markerWidth', 6)
+            .attr('markerHeight', 6)
+            .attr('xoverflow', 'visible')
+            .append('svg:path')
+            .attr('d', 'M 0,-5 L 10,0 L 0,5')
+            .attr('fill', '#4facfe')
+            .attr('stroke', 'none');
+    }
+
+    // 显示工具提示
+    function showTooltip(log) {
+        const tooltip = document.getElementById('tooltip');
+        const tooltipContent = document.getElementById('tooltip-content');
+
+        // 格式化日志信息
+        let content = '';
+        content += `<div><span class="field-name">时间:</span> <span class="field-value">${log.time}</span></div>`;
+        content += `<div><span class="field-name">服务:</span> <span class="field-value">${log['__tag__:_container_name_']}</span></div>`;
+        content += `<div><span class="field-name">Span ID:</span> <span class="field-value">${log.span_id}</span></div>`;
+        content += `<div><span class="field-name">Parent Span ID:</span> <span class="field-value">${log.parent_span_id || '无'}</span></div>`;
+        content += `<div><span class="field-name">消息内容:</span></div>`;
+        content += `<div class="field-value" style="margin-top:8px;">${log.message}</div>`;
+
+        tooltipContent.innerHTML = content;
+
+        // 居中显示工具提示
+        tooltip.style.display = 'block';
+    }
+</script>
 </body>
 </html>
