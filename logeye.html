@@ -14,7 +14,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #1a2a6c, #2c3e50);
+            background: linear-gradient(135deg, #2c3e50, #3a506b); /* 调浅背景色 */
             color: #fff;
             min-height: 100vh;
             padding: 20px;
@@ -211,7 +211,7 @@
         #visualization {
             width: 100%;
             height: 600px;
-            background: rgba(10, 10, 20, 0.6);
+            background: rgba(20, 25, 35, 0.8); /* 加深时间轴区域背景 */
             border-radius: 10px;
             overflow: auto;
             position: relative;
@@ -342,11 +342,11 @@
 
         /* 优化：时间轴行背景 */
         .timeline-row {
-            fill: rgba(255, 255, 255, 0.03);
+            fill: rgba(255, 255, 255, 0.05);
         }
 
         .timeline-row:nth-child(even) {
-            fill: rgba(79, 172, 254, 0.05);
+            fill: rgba(30, 144, 255, 0.1); /* 更明显的交替色 */
         }
 
         @media (max-width: 768px) {
@@ -436,6 +436,7 @@
         body.electron {
             padding-top: 40px;
         }
+
     </style>
 </head>
 <body class="electron">
@@ -451,7 +452,6 @@
 <div class="container">
     <header>
         <h1>日志追踪可视化工具</h1>
-        <p class="subtitle">优化版 - 默认API模式 | 紧凑输入 | 增强时间轴 | 大尺寸工具提示</p>
     </header>
 
     <div class="tabs">
@@ -512,12 +512,11 @@
         <div id="visualization"></div>
 
         <div class="info-panel">
-            <div class="info-title">优化功能</div>
-            <p>• 默认显示API获取模式，更符合常用场景</p>
-            <p>• 输入表单紧凑布局，减少垂直空间占用</p>
-            <p>• 时间轴添加交替背景色，提高可读性</p>
-            <p>• 工具提示宽度增加50%，显示更多信息</p>
-            <p>• 优化时间轴显示，避免水平滚动条</p>
+            <div class="info-title">日志点颜色方案</div>
+            <p>• <span style="color: #ff6b6b">红色</span>: ERROR级别日志</p>
+            <p>• <span style="color: #ffd93d">黄色</span>: WARN级别日志</p>
+            <p>• <span style="color: #51cf66">绿色</span>: 请求/响应相关日志</p>
+            <p>• <span style="color: #4dabf7">蓝色</span>: 普通业务日志</p>
         </div>
     </div>
 </div>
@@ -834,8 +833,8 @@
         // 处理日志数据
         const processedLogs = processLogData(logs);
 
-        // 创建图例
-        createLegend(processedLogs.services);
+        // 创建图例 - 使用类型图例
+        createLegend(processedLogs.typeColors);
 
         // 使用D3进行可视化
         const margin = {top: 50, right: 30, bottom: 80, left: 200};
@@ -849,10 +848,16 @@
             .append('g')
             .attr('transform', `translate(${margin.left},${margin.top})`);
 
-        // 设置缩放行为
+        // 创建时间轴组（不受缩放影响）
+        const timelineGroup = svg.append('g').attr('class', 'timeline-group');
+
+        // 设置缩放行为 - 排除时间轴组
         const zoom = d3.zoom()
             .scaleExtent([0.5, 8])
-            .on('zoom', zoomed);
+            .on('zoom', function(event) {
+                // 只缩放非时间轴元素
+                svg.selectAll('.log-point, .connection, .service-label').attr('transform', event.transform);
+            });
 
         svg.call(zoom);
 
@@ -869,7 +874,7 @@
         // 添加时间轴行背景（交替颜色）
         const rowHeight = (height - 40) / processedLogs.maxYPos;
         for (let i = 0; i <= processedLogs.maxYPos; i++) {
-            svg.append('rect')
+            timelineGroup.append('rect')
                 .attr('class', 'timeline-row')
                 .attr('x', 0)
                 .attr('y', yScale(i) - rowHeight/2)
@@ -878,7 +883,7 @@
         }
 
         // 绘制时间轴
-        drawTimeline(svg, timeScale, height, processedLogs);
+        drawTimeline(timelineGroup, timeScale, height, processedLogs);
 
         // 绘制日志点
         drawLogPoints(svg, timeScale, yScale, processedLogs);
@@ -892,38 +897,6 @@
         window.timeScale = timeScale;
         window.processedLogs = processedLogs;
         window.height = height;
-
-        // 缩放函数
-        function zoomed(event) {
-            const transform = event.transform;
-            const newXScale = transform.rescaleX(timeScale);
-
-            // 更新时间轴
-            svg.selectAll('.timeline')
-                .attr('x1', d => newXScale(d))
-                .attr('x2', d => newXScale(d));
-
-            // 更新时间标签
-            svg.selectAll('.time-label')
-                .attr('x', d => newXScale(d))
-                .text(d => {
-                    const date = new Date(d);
-                    return `${date.getSeconds()}.${date.getMilliseconds().toString().padStart(3, '0')}s`;
-                });
-
-            // 更新时间轴标题
-            svg.select('.time-title')
-                .attr('x', newXScale(processedLogs.minTime + (processedLogs.maxTime - processedLogs.minTime) / 2));
-
-            // 更新日志点
-            svg.selectAll('.log-point')
-                .attr('cx', d => newXScale(d.timestamp));
-
-            // 更新连接线
-            svg.selectAll('.connection')
-                .attr('x1', d => newXScale(d.parentTime))
-                .attr('x2', d => newXScale(d.childTime));
-        }
 
         // 缩放功能
         document.getElementById('zoom-in').addEventListener('click', zoomIn);
@@ -950,7 +923,7 @@
         }
     }
 
-    // 处理日志数据
+    // 处理日志数据 - 增加日志类型分类
     function processLogData(logs) {
         // 解析时间
         logs.forEach(log => {
@@ -968,6 +941,29 @@
                 parseInt(second),
                 parseInt(ms || '0')
             ).getTime();
+
+            // 添加日志类型分类
+            log.type = "business"; // 默认业务日志
+            log.log_level = log.log_level || "info"; // 默认info级别
+
+            // 1. 错误日志
+            if (log.log_level.toLowerCase() === "error") {
+                log.type = "error";
+            }
+            // 2. 警告日志
+            else if (log.log_level.toLowerCase() === "warn") {
+                log.type = "warn";
+            }
+            // 3. 请求/响应日志
+            else if (log.log_level.toLowerCase() === "info") {
+                const message = log.message || "";
+                if (message.includes("WEB >>> Request") ||
+                    message.includes("WEB <<< Response") ||
+                    message.includes("Feign ==> Request") ||
+                    message.includes("Feign <== Response")) {
+                    log.type = "request";
+                }
+            }
         });
 
         // 排序日志
@@ -980,9 +976,13 @@
         // 提取所有服务
         const services = [...new Set(logs.map(log => log['__tag__:_container_name_']))];
 
-        // 创建颜色映射
-        const colorScale = d3.scaleOrdinal(d3.schemeCategory10)
-            .domain(services);
+        // 创建颜色映射 - 按类型而非服务
+        const typeColors = {
+            "error": "#ff6b6b",
+            "warn": "#ffd93d",
+            "request": "#51cf66",
+            "business": "#4dabf7"
+        };
 
         // 构建树结构
         const spanMap = new Map();
@@ -995,7 +995,7 @@
                     id: log.span_id,
                     parentId: log.parent_span_id,
                     service: log['__tag__:_container_name_'],
-                    color: colorScale(log['__tag__:_container_name_']),
+                    color: typeColors[log.type], // 使用类型颜色
                     logs: [],
                     depth: 0
                 });
@@ -1004,6 +1004,7 @@
             spanMap.get(log.span_id).logs.push({
                 time: log.timestamp,
                 message: log.message,
+                type: log.type,
                 raw: log
             });
         });
@@ -1061,22 +1062,28 @@
             maxDepth,
             maxYPos: yPos - 1, // 最大位置值
             verticalPositions,
-            colorScale
+            typeColors // 返回类型颜色映射
         };
     }
 
-    // 创建图例
-    function createLegend(services) {
+    // 创建图例 - 更新为类型图例
+    function createLegend(typeColors) {
         const legendContainer = document.getElementById('legend');
         legendContainer.innerHTML = '';
 
-        services.forEach(service => {
-            const color = d3.schemeCategory10[services.indexOf(service) % 10];
+        const types = [
+            { name: "ERROR日志", color: typeColors.error },
+            { name: "WARN日志", color: typeColors.warn },
+            { name: "请求/响应日志", color: typeColors.request },
+            { name: "业务日志", color: typeColors.business }
+        ];
+
+        types.forEach(type => {
             const item = document.createElement('div');
             item.className = 'legend-item';
             item.innerHTML = `
-                <div class="legend-color" style="background-color:${color}"></div>
-                <span>${service}</span>
+                <div class="legend-color" style="background-color:${type.color}"></div>
+                <span>${type.name}</span>
             `;
             legendContainer.appendChild(item);
         });
@@ -1125,7 +1132,7 @@
             .text('时间轴（秒.毫秒）');
     }
 
-    // 绘制日志点
+    // 绘制日志点 - 使用类型颜色
     function drawLogPoints(svg, timeScale, yScale, data) {
         const points = svg.selectAll('.log-point')
             .data(data.logs)
@@ -1138,7 +1145,11 @@
                 return yScale(yPos);
             })
             .attr('r', 6)
-            .attr('fill', d => data.colorScale(d['__tag__:_container_name_']))
+            .attr('fill', d => {
+                // 使用类型颜色
+                const span = data.spanMap.get(d.span_id);
+                return span ? span.color : '#4dabf7';
+            })
             .attr('stroke', '#fff')
             .attr('stroke-width', 1)
             .attr('data-log', d => JSON.stringify(d))
@@ -1157,6 +1168,7 @@
             if (span.logs.length > 0) {
                 const yPos = data.verticalPositions.get(span.id) || 0;
                 svg.append('text')
+                    .attr('class', 'service-label')
                     .attr('x', -10)
                     .attr('y', yScale(yPos))
                     .attr('text-anchor', 'end')
