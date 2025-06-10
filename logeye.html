@@ -14,7 +14,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #2c3e50, #3a506b); /* 调浅背景色 */
+            background: linear-gradient(135deg, #2c3e50, #3a506b);
             color: #fff;
             min-height: 100vh;
             padding: 20px;
@@ -211,7 +211,7 @@
         #visualization {
             width: 100%;
             height: 600px;
-            background: rgba(20, 25, 35, 0.8); /* 加深时间轴区域背景 */
+            background: rgba(20, 25, 35, 0.8);
             border-radius: 10px;
             overflow: auto;
             position: relative;
@@ -227,7 +227,6 @@
             border: 1px solid #4facfe;
             border-radius: 10px;
             padding: 20px;
-            /* 增加50%宽度 */
             max-width: 1050px;
             width: 90%;
             z-index: 100;
@@ -346,7 +345,7 @@
         }
 
         .timeline-row:nth-child(even) {
-            fill: rgba(30, 144, 255, 0.1); /* 更明显的交替色 */
+            fill: rgba(30, 144, 255, 0.1);
         }
 
         @media (max-width: 768px) {
@@ -470,11 +469,6 @@
             transition: transform 0.2s ease;
         }
 
-        .log-point:hover {
-            transform: scale(1.3);
-            z-index: 10;
-        }
-
         .staggered-point {
             animation: pulse 1.5s infinite alternate;
         }
@@ -482,6 +476,54 @@
         @keyframes pulse {
             from { r: 6; opacity: 1; }
             to { r: 8; opacity: 0.8; }
+        }
+
+        /* Hover tooltip */
+        .hover-tooltip {
+            position: absolute;
+            background: rgba(30, 30, 50, 0.95);
+            border: 1px solid #4facfe;
+            border-radius: 8px;
+            padding: 10px 15px;
+            max-width: 500px;
+            z-index: 10;
+            display: none;
+            color: #fff;
+            font-family: monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            pointer-events: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .hover-tooltip-content {
+            max-height: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .log-level-indicator {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 8px;
+            font-size: 0.8rem;
+        }
+
+        .log-level-error {
+            background-color: #ff6b6b;
+            color: #2c0c0c;
+        }
+
+        .log-level-warn {
+            background-color: #ffd93d;
+            color: #2c2c0c;
+        }
+
+        .log-level-info {
+            background-color: #4dabf7;
+            color: #0c1d2c;
         }
     </style>
 </head>
@@ -498,6 +540,7 @@
 <div class="container">
     <header>
         <h1>日志追踪可视化工具</h1>
+        <p class="subtitle">优化交互体验：悬停预览日志详情，点击固定查看，外部点击关闭</p>
     </header>
 
     <div class="tabs">
@@ -574,6 +617,7 @@
             <p>• <span style="color: #ffd93d">黄色</span>: WARN级别日志</p>
             <p>• <span style="color: #51cf66">绿色</span>: 请求/响应相关日志</p>
             <p>• <span style="color: #4dabf7">蓝色</span>: 普通业务日志</p>
+            <p class="status-badge" style="margin-top: 15px">交互提示：鼠标悬停预览日志，点击固定查看，点击外部关闭</p>
         </div>
     </div>
 </div>
@@ -584,6 +628,11 @@
     <div class="tooltip-content" id="tooltip-content"></div>
 </div>
 
+<!-- Hover tooltip -->
+<div class="hover-tooltip" id="hover-tooltip">
+    <div class="hover-tooltip-content" id="hover-tooltip-content"></div>
+</div>
+
 <script>
     // 示例日志数据（如果用户没有上传文件）
     const sampleLogs = [
@@ -592,119 +641,144 @@
             "message": "WEB >> Request 172.31.123.252 POST http://172.31.123.219:8001/aurora/v1/distributor/estimate/startDistributorEstimates",
             "span_id": "17a96780fcecec2a",
             "parent_span_id": "ed23a46dc4b802aa",
-            "__tag__:_container_name_": "mars-aurora"
+            "__tag__:_container_name_": "mars-aurora",
+            "log_level": "INFO"
         },
         {
             "time": "2025-06-04 11:19:58.537",
             "message": "Feign ==> Request [CaoCaoFeignMicroServer#estimate] GET https://csp.caocaokeji.cn/v2/common/estimatePriceWithDetail",
             "span_id": "0cd5612f5f3c7cae",
             "parent_span_id": "e935560676d7024b",
-            "__tag__:_container_name_": "mars-aurora"
+            "__tag__:_container_name_": "mars-aurora",
+            "log_level": "INFO"
         },
         {
             "time": "2025-06-04 11:19:58.758",
             "message": "Feign <== Response 220ms 200 GET https://csp.caocaokeji.cn/v2/common/estimatePriceWithDetail",
             "span_id": "0cd5612f5f3c7cae",
             "parent_span_id": "e935560676d7024b",
-            "__tag__:_container_name_": "mars-aurora"
+            "__tag__:_container_name_": "mars-aurora",
+            "log_level": "INFO"
         },
         {
             "time": "2025-06-04 11:19:58.759",
             "message": "Feign ==> Request [CaoCaoFeignMicroServer#queryMeterRuleByEstimateKey] POST https://csp.caocaokeji.cn/v2/common/queryMeterRuleByEstimateKey",
             "span_id": "7c79521eb54381e7",
             "parent_span_id": "e935560676d7024b",
-            "__tag__:_container_name_": "mars-aurora"
+            "__tag__:_container_name_": "mars-aurora",
+            "log_level": "INFO"
         },
         {
             "time": "2025-06-04 11:19:58.801",
             "message": "Feign <== Response 41ms 200 POST https://csp.caocaokeji.cn/v2/common/queryMeterRuleByEstimateKey",
             "span_id": "7c79521eb54381e7",
             "parent_span_id": "e935560676d7024b",
-            "__tag__:_container_name_": "mars-aurora"
+            "__tag__:_container_name_": "mars-aurora",
+            "log_level": "INFO"
         },
         {
             "time": "2025-06-04 11:19:58.801",
             "message": "[API success]. platform = caocao,httCode = 200, requestUrl = https://csp.caocaokeji.cn//v2/common/queryMeterRuleByEstimateKey",
             "span_id": "e935560676d7024b",
             "parent_span_id": "17a96780fcecec2a",
-            "__tag__:_container_name_": "mars-aurora"
+            "__tag__:_container_name_": "mars-aurora",
+            "log_level": "INFO"
         },
         {
             "time": "2025-06-04 11:19:58.803",
             "message": "预估抽佣信息：{抽佣后分销商预估总金额=1001, 流量方抽佣比例=9, 分销商灵犀抽佣比例=9...}",
             "span_id": "e935560676d7024b",
             "parent_span_id": "17a96780fcecec2a",
-            "__tag__:_container_name_": "mars-aurora"
+            "__tag__:_container_name_": "mars-aurora",
+            "log_level": "INFO"
         },
         {
             "time": "2025-06-04 11:19:58.804",
             "message": "[定价预估]检查批次中任务。(inquiryOrderNo:850333054145101825,priceType:0,appKey:1589df610a5a19ae)",
             "span_id": "17a96780fcecec2a",
             "parent_span_id": "ed23a46dc4b802aa",
-            "__tag__:_container_name_": "mars-aurora"
+            "__tag__:_container_name_": "mars-aurora",
+            "log_level": "INFO"
         },
         {
             "time": "2025-06-04 11:19:58.804",
             "message": "[定价预估]检查批次中任务，尝试触发复制逻辑",
             "span_id": "17a96780fcecec2a",
             "parent_span_id": "ed23a46dc4b802aa",
-            "__tag__:_container_name_": "mars-aurora"
+            "__tag__:_container_name_": "mars-aurora",
+            "log_level": "WARN"
         },
         {
             "time": "2025-06-04 11:19:58.805",
             "message": "[定价预估]当前预估任务执行完成，以预估单号维度聚合结果",
             "span_id": "17a96780fcecec2a",
             "parent_span_id": "ed23a46dc4b802aa",
-            "__tag__:_container_name_": "mars-aurora"
+            "__tag__:_container_name_": "mars-aurora",
+            "log_level": "INFO"
         },
         {
             "time": "2025-06-04 11:19:58.805",
             "message": "WEB <<< Response 270ms 200 POST http://172.31.123.219:8001/aurora/v1/distributor/estimate/startDistributorEstimates",
             "span_id": "17a96780fcecec2a",
             "parent_span_id": "ed23a46dc4b802aa",
-            "__tag__:_container_name_": "mars-aurora"
+            "__tag__:_container_name_": "mars-aurora",
+            "log_level": "INFO"
         },
         {
             "time": "2025-06-04 11:19:58.529",
             "message": "WEB >>> Request 172.31.110.233 POST http://t3-quaoar.lingxichuxing.com/openapi/order/estimateinfo",
             "span_id": "eeadf3f4566e2a91",
             "parent_span_id": "",
-            "__tag__:_container_name_": "mars-kylin"
+            "__tag__:_container_name_": "mars-kylin",
+            "log_level": "INFO"
         },
         {
             "time": "2025-06-04 11:19:58.532",
             "message": "[DistributorInquiryServiceImpl][distributorEstimate][startDistributorEstimates]分销商预估入参",
             "span_id": "e7e3c19efc61c80b",
             "parent_span_id": "eeadf3f4566e2a91",
-            "__tag__:_container_name_": "mars-kylin"
+            "__tag__:_container_name_": "mars-kylin",
+            "log_level": "INFO"
         },
         {
             "time": "2025-06-04 11:19:58.532",
             "message": "Feign ==> Request [AuroraDistributorOrderServiceClient#startDistributorEstimates] POST http://aurora/aurora/v1/distributor/estimate/startDistributorEstimates",
             "span_id": "ed23a46dc4b802aa",
             "parent_span_id": "e7e3c19efc61c80b",
-            "__tag__:_container_name_": "mars-kylin"
+            "__tag__:_container_name_": "mars-kylin",
+            "log_level": "INFO"
         },
         {
             "time": "2025-06-04 11:19:58.805",
             "message": "Feign <== Response 271ms 200 POST http://172.31.123.219:8001/aurora/v1/distributor/estimate/startDistributorEstimates",
             "span_id": "ed23a46dc4b802aa",
             "parent_span_id": "e7e3c19efc61c80b",
-            "__tag__:_container_name_": "mars-kylin"
+            "__tag__:_container_name_": "mars-kylin",
+            "log_level": "INFO"
         },
         {
             "time": "2025-06-04 11:19:58.805",
             "message": "[DistributorInquiryServiceImpl][distributorEstimate][startDistributorEstimates]分销商预估返回值",
             "span_id": "e7e3c19efc61c80b",
             "parent_span_id": "eeadf3f4566e2a91",
-            "__tag__:_container_name_": "mars-kylin"
+            "__tag__:_container_name_": "mars-kylin",
+            "log_level": "INFO"
         },
         {
             "time": "2025-06-04 11:19:58.808",
             "message": "WEB <<< Response 279ms 200 POST http://t3-quaoar.lingxichuxing.com/openapi/order/estimateinfo",
             "span_id": "eeadf3f4566e2a91",
             "parent_span_id": "",
-            "__tag__:_container_name_": "mars-kylin"
+            "__tag__:_container_name_": "mars-kylin",
+            "log_level": "INFO"
+        },
+        {
+            "time": "2025-06-04 11:19:58.810",
+            "message": "数据库连接超时，重试中...",
+            "span_id": "eeadf3f4566e2a92",
+            "parent_span_id": "",
+            "__tag__:_container_name_": "mars-db",
+            "log_level": "ERROR"
         }
     ];
 
@@ -718,6 +792,9 @@
         noLogs: 0
     };
 
+    // 浮窗状态变量
+    let pinnedLog = null;
+
     // 初始化
     document.addEventListener('DOMContentLoaded', function() {
         const fileInput = document.getElementById('file-input');
@@ -729,6 +806,8 @@
         const tabBtns = document.querySelectorAll('.tab-btn');
         const fetchBtn = document.getElementById('fetch-btn');
         const loadingIndicator = document.getElementById('loading-indicator');
+        const hoverTooltip = document.getElementById('hover-tooltip');
+        const hoverTooltipContent = document.getElementById('hover-tooltip-content');
 
         // 窗口控制按钮
         if (window.electronAPI) {
@@ -794,10 +873,20 @@
         // 关闭工具提示
         tooltipClose.addEventListener('click', () => {
             tooltip.style.display = 'none';
+            pinnedLog = null;
         });
 
         // 获取日志数据
         fetchBtn.addEventListener('click', fetchLogsFromAPI);
+
+        // 点击文档关闭固定浮窗
+        document.addEventListener('click', function(e) {
+            // 如果点击的不是日志点且不是tooltip内部
+            if (pinnedLog && !e.target.closest('.log-point') && !e.target.closest('#tooltip')) {
+                tooltip.style.display = 'none';
+                pinnedLog = null;
+            }
+        });
 
         // 默认使用示例数据
         visualizeLogs(sampleLogs);
@@ -1052,6 +1141,7 @@
                 time: log.timestamp,
                 message: log.message,
                 type: log.type,
+                log_level: log.log_level || "INFO",
                 raw: log
             });
         });
@@ -1279,13 +1369,18 @@
             .attr('stroke-width', 1)
             .attr('data-log', d => JSON.stringify(d))
             .on('mouseover', function(event, d) {
-                d3.select(this).attr('r', 8);
+                // 显示悬停浮窗
+                showHoverTooltip(event, d);
             })
             .on('mouseout', function() {
-                d3.select(this).attr('r', 6);
+                // 隐藏悬停浮窗
+                hideHoverTooltip();
             })
             .on('click', function(event, d) {
-                showTooltip(d);
+                // 防止事件冒泡到文档关闭固定浮窗
+                event.stopPropagation();
+                // 显示固定浮窗
+                showFixedTooltip(d);
             });
 
         // 添加服务标签
@@ -1360,24 +1455,65 @@
             .attr('stroke', 'none');
     }
 
-    // 显示工具提示
-    function showTooltip(log) {
-        const tooltip = document.getElementById('tooltip');
-        const tooltipContent = document.getElementById('tooltip-content');
+    // 显示悬停浮窗
+    function showHoverTooltip(event, log) {
+        const hoverTooltip = document.getElementById('hover-tooltip');
+        const hoverTooltipContent = document.getElementById('hover-tooltip-content');
+
+        // 如果已经有固定浮窗显示，则不显示悬停浮窗
+        if (pinnedLog) return;
 
         // 格式化日志信息
         let content = '';
+        const levelClass = getLogLevelClass(log.log_level);
+        content += `<div><span class="log-level-indicator ${levelClass}">${log.log_level}</span> ${log.time}</div>`;
+        content += `<div style="margin-top:5px; font-weight:500">${log.message.substring(0, 80)}${log.message.length > 80 ? '...' : ''}</div>`;
+
+        hoverTooltipContent.innerHTML = content;
+
+        // 定位浮窗
+        hoverTooltip.style.display = 'block';
+        hoverTooltip.style.left = `${event.pageX + 15}px`;
+        hoverTooltip.style.top = `${event.pageY - 60}px`;
+    }
+
+    // 隐藏悬停浮窗
+    function hideHoverTooltip() {
+        const hoverTooltip = document.getElementById('hover-tooltip');
+        hoverTooltip.style.display = 'none';
+    }
+
+    // 显示固定浮窗
+    function showFixedTooltip(log) {
+        const tooltip = document.getElementById('tooltip');
+        const tooltipContent = document.getElementById('tooltip-content');
+
+        // 设置固定日志
+        pinnedLog = log;
+
+        // 格式化日志信息
+        let content = '';
+        const levelClass = getLogLevelClass(log.log_level);
         content += `<div><span class="field-name">时间:</span> <span class="field-value">${log.time}</span></div>`;
+        content += `<div><span class="field-name">日志级别:</span> <span class="log-level-indicator ${levelClass}">${log.log_level}</span></div>`;
         content += `<div><span class="field-name">服务:</span> <span class="field-value">${log['__tag__:_container_name_']}</span></div>`;
         content += `<div><span class="field-name">Span ID:</span> <span class="field-value">${log.span_id}</span></div>`;
         content += `<div><span class="field-name">Parent Span ID:</span> <span class="field-value">${log.parent_span_id || '无'}</span></div>`;
         content += `<div><span class="field-name">消息内容:</span></div>`;
-        content += `<div class="field-value" style="margin-top:8px;">${log.message}</div>`;
+        content += `<div class="field-value" style="margin-top:8px; white-space: pre-wrap;">${log.message}</div>`;
 
         tooltipContent.innerHTML = content;
 
-        // 居中显示工具提示
+        // 显示固定浮窗
         tooltip.style.display = 'block';
+    }
+
+    // 获取日志级别对应的CSS类
+    function getLogLevelClass(level) {
+        const levelLower = level.toLowerCase();
+        if (levelLower === 'error') return 'log-level-error';
+        if (levelLower === 'warn' || levelLower === 'warning') return 'log-level-warn';
+        return 'log-level-info';
     }
 </script>
 </body>
