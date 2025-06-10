@@ -40,6 +40,7 @@ app.on('window-all-closed', () => {
 
 // 处理获取日志的请求
 ipcMain.handle('fetchLogs', async (event, { cookie, csrfToken, traceId, from, to }) => {
+  console.log(`[API Call] 请求日志: traceId=${traceId}, from=${new Date(from*1000).toISOString()}, to=${new Date(to*1000).toISOString()}`);
   return new Promise((resolve, reject) => {
     const postData = new URLSearchParams({
       ProjectName: 'lx-mars-pro',
@@ -109,13 +110,14 @@ ipcMain.handle('fetchLogs', async (event, { cookie, csrfToken, traceId, from, to
           }
           
           if (logs.length > 0) {
+            console.log(`[API Success] 获取到 ${logs.length} 条日志`);
             resolve(logs);
           } else {
-            console.error('No logs found in response:', result);
+            console.error('[API Error] 未获取到有效日志数据');
             reject(new Error('未获取到有效日志数据'));
           }
         } catch (error) {
-          console.error('Failed to parse response:', data);
+          console.error('[Parse Error] 解析日志数据失败:', error.message);
           reject(new Error('解析日志数据失败'));
         }
       });
