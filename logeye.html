@@ -220,9 +220,6 @@
 
         .tooltip {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             background: rgba(30, 30, 50, 0.95);
             border: 1px solid #4facfe;
             border-radius: 10px;
@@ -1107,12 +1104,12 @@
         // 提取所有服务
         const services = [...new Set(logs.map(log => log['__tag__:_container_name_']))];
 
-        // 创建颜色映射 - 按类型而非服务
+        // 创建颜色映射 - 按类型而非服务（修复颜色映射）
         const typeColors = {
             "error": "#ff6b6b",
             "warn": "#ffd93d",
-            "request": "#51cf66",
-            "business": "#4dabf7"
+            "request": "#51cf66", // 请求/响应日志为绿色
+            "business": "#4dabf7"  // 业务日志为蓝色
         };
 
         // 构建树结构
@@ -1131,7 +1128,6 @@
                     id: log.span_id,
                     parentId: log.parent_span_id,
                     service: log['__tag__:_container_name_'],
-                    color: typeColors[log.type], // 使用类型颜色
                     logs: [],
                     depth: 0
                 });
@@ -1294,7 +1290,7 @@
             .text('时间轴（秒.毫秒）');
     }
 
-    // 绘制日志点 - 使用类型颜色
+    // 绘制日志点 - 使用类型颜色（修复颜色分配）
     function drawLogPoints(svg, timeScale, yScale, data) {
         // 检测时间接近的点并错开显示
         const timeThreshold = 5; // 5毫秒内视为时间接近
@@ -1361,10 +1357,8 @@
                 return baseY + (d.offsetY || 0) + verticalOffset;
             })
             .attr('r', 6)
-            .attr('fill', d => {
-                const span = data.spanMap.get(d.span_id);
-                return span ? span.color : '#4dabf7';
-            })
+            // 修复颜色分配问题：直接使用日志类型对应的颜色
+            .attr('fill', d => data.typeColors[d.type] || '#4dabf7')
             .attr('stroke', '#fff')
             .attr('stroke-width', 1)
             .attr('data-log', d => JSON.stringify(d))
@@ -1396,6 +1390,9 @@
                     .text(span.service);
             }
         });
+
+        // 创建图例
+        createLegend(data.typeColors);
     }
 
     // 绘制连接线
@@ -1455,7 +1452,7 @@
             .attr('stroke', 'none');
     }
 
-    // 显示悬停浮窗
+    // 显示悬停浮窗（修复位置问题）
     function showHoverTooltip(event, log) {
         const hoverTooltip = document.getElementById('hover-tooltip');
         const hoverTooltipContent = document.getElementById('hover-tooltip-content');
@@ -1471,10 +1468,44 @@
 
         hoverTooltipContent.innerHTML = content;
 
-        // 定位浮窗
+        // 显示浮窗
         hoverTooltip.style.display = 'block';
-        hoverTooltip.style.left = `${event.pageX + 15}px`;
-        hoverTooltip.style.top = `${event.pageY - 60}px`;
+
+        // 获取浮窗尺寸
+        const tooltipWidth = hoverTooltip.offsetWidth;
+        const tooltipHeight = hoverTooltip.offsetHeight;
+
+        // 计算理想位置（在鼠标右下方）
+        let left = event.pageX + 15;
+        let top = event.pageY - 60;
+
+        // 修复位置问题：确保浮窗不会超出页面边界
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+
+        // 检查右侧边界
+        if (left + tooltipWidth > windowWidth) {
+            left = event.pageX - tooltipWidth - 15;
+        }
+
+        // 检查左侧边界
+        if (left < 0) {
+            left = 15;
+        }
+
+        // 检查顶部边界
+        if (top < 0) {
+            top = event.pageY + 15;
+        }
+
+        // 检查底部边界
+        if (top + tooltipHeight > windowHeight) {
+            top = windowHeight - tooltipHeight - 15;
+        }
+
+        // 设置位置
+        hoverTooltip.style.left = `${left}px`;
+        hoverTooltip.style.top = `${top}px`;
     }
 
     // 隐藏悬停浮窗
@@ -1483,7 +1514,7 @@
         hoverTooltip.style.display = 'none';
     }
 
-    // 显示固定浮窗
+    // 显示固定浮窗（修复位置问题）
     function showFixedTooltip(log) {
         const tooltip = document.getElementById('tooltip');
         const tooltipContent = document.getElementById('tooltip-content');
@@ -1506,6 +1537,18 @@
 
         // 显示固定浮窗
         tooltip.style.display = 'block';
+
+        // 获取浮窗尺寸
+        const tooltipWidth = tooltip.offsetWidth;
+        const tooltipHeight = tooltip.offsetHeight;
+
+        // 计算居中位置
+        const left = Math.max(0, (window.innerWidth - tooltipWidth) / 2);
+        const top = Math.max(0, (window.innerHeight - tooltipHeight) / 2);
+
+        // 设置位置
+        tooltip.style.left = `${left}px`;
+        tooltip.style.top = `${top}px`;
     }
 
     // 获取日志级别对应的CSS类
