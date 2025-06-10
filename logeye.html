@@ -466,6 +466,23 @@
             margin-left: 5px;
         }
 
+        .log-point {
+            transition: transform 0.2s ease;
+        }
+
+        .log-point:hover {
+            transform: scale(1.3);
+            z-index: 10;
+        }
+
+        .staggered-point {
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { r: 6; opacity: 1; }
+            to { r: 8; opacity: 0.8; }
+        }
     </style>
 </head>
 <body class="electron">
@@ -691,6 +708,16 @@
         }
     ];
 
+    // 重置全局统计变量
+    let apiCallCount = 0;
+    let lastLogCount = 0;
+    let lastInvalidLogCount = 0;
+    let lastInvalidLogReasons = {
+        missingSpanId: 0,
+        missingParent: 0,
+        noLogs: 0
+    };
+
     // 初始化
     document.addEventListener('DOMContentLoaded', function() {
         const fileInput = document.getElementById('file-input');
@@ -776,26 +803,16 @@
         visualizeLogs(sampleLogs);
     });
 
-    // 统计变量
-    let apiCallCount = 0;
-    let logCount = 0;
-    let invalidLogCount = 0;
-    let invalidLogReasons = {
-        missingSpanId: 0,
-        missingParent: 0,
-        noLogs: 0
-    };
-
-    // 更新统计显示
-    function updateStatisticsDisplay() {
+    // 更新统计显示 - 使用局部统计变量
+    function updateStatisticsDisplay(stats) {
         document.getElementById('api-call-count').textContent = apiCallCount;
-        document.getElementById('log-count').textContent = logCount;
-        document.getElementById('invalid-log-count').textContent = invalidLogCount;
+        document.getElementById('log-count').textContent = stats.logCount;
+        document.getElementById('invalid-log-count').textContent = stats.invalidLogCount;
 
         const reasons = [];
-        if (invalidLogReasons.missingSpanId) reasons.push(`${invalidLogReasons.missingSpanId}条缺少Span ID`);
-        if (invalidLogReasons.missingParent) reasons.push(`${invalidLogReasons.missingParent}条缺少父Span`);
-        if (invalidLogReasons.noLogs) reasons.push(`${invalidLogReasons.noLogs}条无有效日志`);
+        if (stats.invalidLogReasons.missingSpanId) reasons.push(`${stats.invalidLogReasons.missingSpanId}条缺少Span ID`);
+        if (stats.invalidLogReasons.missingParent) reasons.push(`${stats.invalidLogReasons.missingParent}条缺少父Span`);
+        if (stats.invalidLogReasons.noLogs) reasons.push(`${stats.invalidLogReasons.noLogs}条无有效日志`);
 
         document.getElementById('invalid-log-reason').textContent = reasons.join('，');
     }
@@ -820,10 +837,6 @@
                     console.error('文件解析错误:', error);
                 }
             }
-        };
-
-        reader.onerror = function() {
-            alert('读取文件时发生错误');
         };
 
         reader.readAsText(file);
@@ -854,7 +867,6 @@
 
         // 更新API调用统计
         apiCallCount++;
-        updateStatisticsDisplay();
 
         // 显示加载指示器
         const loadingIndicator = document.getElementById('loading-indicator');
@@ -880,14 +892,12 @@
             }
 
             if (logs && logs.length > 0) {
-                logCount += logs.length;
                 visualizeLogs(logs);
             }
         } catch (error) {
             console.error('获取日志数据失败:', error);
             alert('获取日志数据失败: ' + error.message);
         } finally {
-            // 隐藏加载指示器
             loadingIndicator.style.display = 'none';
         }
     }
@@ -901,11 +911,11 @@
         const container = document.getElementById('visualization');
         container.innerHTML = '';
 
-        // 处理日志数据
-        const processedLogs = processLogData(logs);
+        // 处理日志数据 - 返回局部统计变量
+        const { processedLogs, stats } = processLogData(logs);
 
-        // 创建图例 - 使用类型图例
-        createLegend(processedLogs.typeColors);
+        // 更新统计显示
+        updateStatisticsDisplay(stats);
 
         // 使用D3进行可视化
         const margin = {top: 50, right: 30, bottom: 80, left: 200};
@@ -921,13 +931,6 @@
 
         // 创建时间轴组（不受缩放影响）
         const timelineGroup = svg.append('g').attr('class', 'timeline-group');
-
-        // 禁用缩放行为
-        const zoom = d3.zoom()
-            .scaleExtent([1, 1]) // 禁止缩放
-            .on('zoom', null); // 移除缩放处理
-
-        svg.call(zoom);
 
         // 创建时间比例尺
         const timeScale = d3.scaleLinear()
@@ -953,46 +956,24 @@
         // 绘制时间轴
         drawTimeline(timelineGroup, timeScale, height, processedLogs);
 
-        // 绘制日志点
+        // 绘制日志点（使用防重叠优化）
         drawLogPoints(svg, timeScale, yScale, processedLogs);
 
         // 绘制连接线
         drawConnections(svg, timeScale, yScale, processedLogs);
-
-        // 保存缩放相关的元素引用
-        window.zoomableSvg = svg;
-        window.zoomBehavior = zoom;
-        window.timeScale = timeScale;
-        window.processedLogs = processedLogs;
-        window.height = height;
-    }
-
-    // 缩放功能实现
-    function zoomIn() {
-        if (window.zoomableSvg && window.zoomBehavior) {
-            window.zoomableSvg.transition().call(window.zoomBehavior.scaleBy, 1.5);
-        }
-    }
-
-    function zoomOut() {
-        if (window.zoomableSvg && window.zoomBehavior) {
-            window.zoomableSvg.transition().call(window.zoomBehavior.scaleBy, 0.75);
-        }
-    }
-
-    function resetView() {
-        if (window.zoomableSvg && window.zoomBehavior) {
-            window.zoomableSvg.transition().call(window.zoomBehavior.transform, d3.zoomIdentity);
-        }
     }
 
     // 处理日志数据 - 增加日志类型分类
     function processLogData(logs) {
-        // 重置统计
-        invalidLogReasons = {
-            missingSpanId: 0,
-            missingParent: 0,
-            noLogs: 0
+        // 创建局部统计变量
+        const stats = {
+            logCount: logs.length,
+            invalidLogCount: 0,
+            invalidLogReasons: {
+                missingSpanId: 0,
+                missingParent: 0,
+                noLogs: 0
+            }
         };
 
         // 解析时间
@@ -1021,14 +1002,8 @@
                 log.type = "error";
             } else if (logLevel === "warn" || logLevel === "warning") {
                 log.type = "warn";
-            } else if (
-                message.includes("request") ||
-                message.includes("response") ||
-                message.includes("feign") ||
-                message.includes("http") ||
-                message.includes(">>>") ||
-                message.includes("<<<")
-            ) {
+            } else if (message.includes("web >>> request") || message.includes("web <<< response") ||
+                message.includes("feign <== response") || message.includes("feign ==> request")) {
                 log.type = "request";
             }
         });
@@ -1057,6 +1032,11 @@
 
         // 创建span节点
         logs.forEach(log => {
+            if (!log.span_id) {
+                stats.invalidLogReasons.missingSpanId++;
+                return;
+            }
+
             if (!spanMap.has(log.span_id)) {
                 spanMap.set(log.span_id, {
                     id: log.span_id,
@@ -1121,25 +1101,40 @@
 
         // 统计无效日志
         spanMap.forEach(span => {
-            if (!span.id) invalidLogReasons.missingSpanId++;
-            if (!span.parentId && span.id !== rootSpans[0]?.id) invalidLogReasons.missingParent++;
-            if (!span.logs || span.logs.length === 0) invalidLogReasons.noLogs++;
+            if (!span.id) stats.invalidLogReasons.missingSpanId++;
+            if (!span.parentId && span.id !== rootSpans[0]?.id) stats.invalidLogReasons.missingParent++;
+            if (!span.logs || span.logs.length === 0) stats.invalidLogReasons.noLogs++;
         });
 
-        invalidLogCount = Object.values(invalidLogReasons).reduce((a, b) => a + b, 0);
-        updateStatisticsDisplay();
+        stats.invalidLogCount = Object.values(stats.invalidLogReasons).reduce((a, b) => a + b, 0);
+
+        // 为每个日志点添加时间戳索引（用于防重叠）
+        const timeClusters = new Map();
+        spanMap.forEach(span => {
+            // 对每个span内的日志按时间排序
+            span.logs.sort((a, b) => a.time - b.time);
+
+            // 为每个日志点添加在span中的索引
+            span.logs.forEach((log, index) => {
+                log.spanIndex = index;
+            });
+        });
 
         return {
-            logs,
-            spanMap,
-            rootSpans,
-            services,
-            minTime,
-            maxTime,
-            maxDepth,
-            maxYPos: yPos - 1, // 最大位置值
-            verticalPositions,
-            typeColors // 返回类型颜色映射
+            processedLogs: {
+                logs,
+                spanMap,
+                rootSpans,
+                services,
+                minTime,
+                maxTime,
+                maxDepth,
+                maxYPos: yPos - 1, // 最大位置值
+                verticalPositions,
+                typeColors,
+                timeClusters
+            },
+            stats
         };
     }
 
@@ -1211,19 +1206,72 @@
 
     // 绘制日志点 - 使用类型颜色
     function drawLogPoints(svg, timeScale, yScale, data) {
+        // 检测时间接近的点并错开显示
+        const timeThreshold = 5; // 5毫秒内视为时间接近
+
+        // 分组时间接近的点
+        const timeGroups = new Map();
+
+        data.logs.forEach(log => {
+            const roundedTime = Math.floor(log.timestamp / timeThreshold) * timeThreshold;
+            if (!timeGroups.has(roundedTime)) {
+                timeGroups.set(roundedTime, []);
+            }
+            timeGroups.get(roundedTime).push(log);
+        });
+
+        // 为每组时间接近的点分配偏移量
+        timeGroups.forEach(group => {
+            if (group.length > 1) {
+                // 按服务分组，避免不同服务的点重叠
+                const serviceGroups = new Map();
+
+                group.forEach(log => {
+                    const service = log['__tag__:_container_name_'];
+                    if (!serviceGroups.has(service)) {
+                        serviceGroups.set(service, []);
+                    }
+                    serviceGroups.get(service).push(log);
+                });
+
+                // 为每个服务内的点分配偏移
+                serviceGroups.forEach(serviceGroup => {
+                    // 计算偏移角度（每个点间隔30度）
+                    const angleStep = (2 * Math.PI) / serviceGroup.length;
+
+                    serviceGroup.forEach((log, index) => {
+                        const radius = 10; // 偏移半径
+                        const angle = index * angleStep;
+
+                        // 计算偏移坐标
+                        log.offsetX = Math.cos(angle) * radius;
+                        log.offsetY = Math.sin(angle) * radius;
+                    });
+                });
+            }
+        });
+
         const points = svg.selectAll('.log-point')
             .data(data.logs)
             .enter()
             .append('circle')
-            .attr('class', 'log-point')
-            .attr('cx', d => timeScale(d.timestamp))
+            .attr('class', d => {
+                const baseClass = 'log-point';
+                // 为时间接近的点添加特殊类（用于动画）
+                const roundedTime = Math.floor(d.timestamp / timeThreshold) * timeThreshold;
+                const group = timeGroups.get(roundedTime) || [];
+                return group.length > 1 ? `${baseClass} staggered-point` : baseClass;
+            })
+            .attr('cx', d => timeScale(d.timestamp) + (d.offsetX || 0))
             .attr('cy', d => {
                 const yPos = data.verticalPositions.get(d.span_id) || 0;
-                return yScale(yPos);
+                const baseY = yScale(yPos);
+                // 添加垂直方向的小偏移，避免完全重叠
+                const verticalOffset = d.spanIndex % 3 === 0 ? 0 : (d.spanIndex % 3 === 1 ? -3 : 3);
+                return baseY + (d.offsetY || 0) + verticalOffset;
             })
             .attr('r', 6)
             .attr('fill', d => {
-                // 使用类型颜色
                 const span = data.spanMap.get(d.span_id);
                 return span ? span.color : '#4dabf7';
             })
