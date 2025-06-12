@@ -466,16 +466,6 @@
             transition: transform 0.2s ease;
         }
 
-        .staggered-point {
-            animation: pulse 1.5s infinite alternate;
-        }
-
-        @keyframes pulse {
-            from { r: 6; opacity: 1; }
-            to { r: 8; opacity: 0.8; }
-        }
-
-        /* Hover tooltip */
         .hover-tooltip {
             position: absolute;
             background: rgba(30, 30, 50, 0.95);
@@ -589,6 +579,11 @@
     <div class="visualization-section" id="visualization-section">
         <div class="controls">
             <div class="service-legend" id="legend"></div>
+            <div class="zoom-controls">
+                <button id="zoom-in">放大</button>
+                <button id="zoom-out">缩小</button>
+                <button id="reset-zoom">重置</button>
+            </div>
         </div>
         <!-- 统计信息面板 -->
         <div class="statistics-panel">
@@ -792,6 +787,13 @@
     // 浮窗状态变量
     let pinnedLog = null;
 
+    // 缩放相关变量
+    let zoomLevel = 1;
+    const zoomFactor = 0.2;
+    let timeScale, yScale;
+    let svg, visualizationGroup;
+    let processedLogsData = null;
+
     // 初始化
     document.addEventListener('DOMContentLoaded', function() {
         const fileInput = document.getElementById('file-input');
@@ -805,6 +807,9 @@
         const loadingIndicator = document.getElementById('loading-indicator');
         const hoverTooltip = document.getElementById('hover-tooltip');
         const hoverTooltipContent = document.getElementById('hover-tooltip-content');
+        const zoomInBtn = document.getElementById('zoom-in');
+        const zoomOutBtn = document.getElementById('zoom-out');
+        const resetZoomBtn = document.getElementById('reset-zoom');
 
         // 窗口控制按钮
         if (window.electronAPI) {
@@ -876,6 +881,11 @@
         // 获取日志数据
         fetchBtn.addEventListener('click', fetchLogsFromAPI);
 
+        // 缩放控制
+        zoomInBtn.addEventListener('click', () => zoom(1));
+        zoomOutBtn.addEventListener('click', () => zoom(-1));
+        resetZoomBtn.addEventListener('click', resetZoom);
+
         // 点击文档关闭固定浮窗
         document.addEventListener('click', function(e) {
             // 如果点击的不是日志点且不是tooltip内部
@@ -888,6 +898,24 @@
         // 默认使用示例数据
         visualizeLogs(sampleLogs);
     });
+
+    // 缩放功能
+    function zoom(direction) {
+        zoomLevel += direction * zoomFactor;
+        zoomLevel = Math.max(0.5, Math.min(zoomLevel, 3)); // 限制缩放范围
+        applyZoom();
+    }
+
+    function resetZoom() {
+        zoomLevel = 1;
+        applyZoom();
+    }
+
+    function applyZoom() {
+        if (!visualizationGroup) return;
+
+        visualizationGroup.attr('transform', `scale(${zoomLevel})`);
+    }
 
     // 更新统计显示 - 使用局部统计变量
     function updateStatisticsDisplay(stats) {
@@ -999,6 +1027,7 @@
 
         // 处理日志数据 - 返回局部统计变量
         const { processedLogs, stats } = processLogData(logs);
+        processedLogsData = processedLogs; // 保存处理后的数据用于缩放重绘
 
         // 更新统计显示
         updateStatisticsDisplay(stats);
@@ -1008,23 +1037,26 @@
         const width = container.clientWidth - margin.left - margin.right;
         const height = container.clientHeight - margin.top - margin.bottom;
 
-        const svg = d3.select(container)
+        // 创建SVG容器
+        svg = d3.select(container)
             .append('svg')
             .attr('width', width + margin.left + margin.right)
-            .attr('height', height + margin.top + margin.bottom)
-            .append('g')
+            .attr('height', height + margin.top + margin.bottom);
+
+        // 创建可视化组
+        visualizationGroup = svg.append('g')
             .attr('transform', `translate(${margin.left},${margin.top})`);
 
-        // 创建时间轴组（不受缩放影响）
-        const timelineGroup = svg.append('g').attr('class', 'timeline-group');
+        // 创建时间轴组
+        const timelineGroup = visualizationGroup.append('g').attr('class', 'timeline-group');
 
         // 创建时间比例尺
-        const timeScale = d3.scaleLinear()
+        timeScale = d3.scaleLinear()
             .domain([processedLogs.minTime, processedLogs.maxTime])
             .range([0, width]);
 
         // 创建垂直位置比例尺
-        const yScale = d3.scaleLinear()
+        yScale = d3.scaleLinear()
             .domain([0, processedLogs.maxYPos])
             .range([20, height - 20]); // 增加垂直边距
 
@@ -1043,10 +1075,10 @@
         drawTimeline(timelineGroup, timeScale, height, processedLogs);
 
         // 绘制日志点（使用防重叠优化）
-        drawLogPoints(svg, timeScale, yScale, processedLogs);
+        drawLogPoints(visualizationGroup, timeScale, yScale, processedLogs);
 
         // 绘制连接线
-        drawConnections(svg, timeScale, yScale, processedLogs);
+        drawConnections(visualizationGroup, timeScale, yScale, processedLogs);
     }
 
     // 处理日志数据 - 增加日志类型分类
@@ -1337,18 +1369,41 @@
             }
         });
 
+        // 按span分组日志点
+        const spanGroups = new Map();
+        data.logs.forEach(log => {
+            if (!spanGroups.has(log.span_id)) {
+                spanGroups.set(log.span_id, []);
+            }
+            spanGroups.get(log.span_id).push(log);
+        });
+
+        // 为每个span内的日志点计算水平偏移（避免同一时间点重叠）
+        spanGroups.forEach(logsInSpan => {
+            // 按时间排序
+            logsInSpan.sort((a, b) => a.timestamp - b.timestamp);
+
+            // 遍历每个点，检查与前一个点的时间差
+            let lastTime = -Infinity;
+            let offsetCount = 0;
+
+            logsInSpan.forEach(log => {
+                if (log.timestamp - lastTime < 5) {
+                    offsetCount++;
+                } else {
+                    offsetCount = 0;
+                }
+                log.xOffset = offsetCount * 10; // 每个点向右偏移10px
+                lastTime = log.timestamp;
+            });
+        });
+
         const points = svg.selectAll('.log-point')
             .data(data.logs)
             .enter()
             .append('circle')
-            .attr('class', d => {
-                const baseClass = 'log-point';
-                // 为时间接近的点添加特殊类（用于动画）
-                const roundedTime = Math.floor(d.timestamp / timeThreshold) * timeThreshold;
-                const group = timeGroups.get(roundedTime) || [];
-                return group.length > 1 ? `${baseClass} staggered-point` : baseClass;
-            })
-            .attr('cx', d => timeScale(d.timestamp) + (d.offsetX || 0))
+            .attr('class', 'log-point') // 不再添加staggered-point类
+            .attr('cx', d => timeScale(d.timestamp) + (d.xOffset || 0) + (d.offsetX || 0))
             .attr('cy', d => {
                 const yPos = data.verticalPositions.get(d.span_id) || 0;
                 const baseY = yScale(yPos);
