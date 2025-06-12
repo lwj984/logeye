@@ -512,6 +512,28 @@
             background-color: #4dabf7;
             color: #0c1d2c;
         }
+
+        /* 添加缩放指示器 */
+        .zoom-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(30, 30, 50, 0.8);
+            border: 1px solid #4facfe;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .zoom-percent {
+            background: rgba(79, 172, 254, 0.2);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body class="electron">
@@ -527,7 +549,7 @@
 <div class="container">
     <header>
         <h1>日志追踪可视化工具</h1>
-        <p class="subtitle">优化交互体验：悬停预览日志详情，点击固定查看，外部点击关闭</p>
+        <p class="subtitle">优化交互体验：时间轴缩放功能，保留服务标签</p>
     </header>
 
     <div class="tabs">
@@ -601,7 +623,12 @@
                 <span class="stat-hint" id="invalid-log-reason"></span>
             </div>
         </div>
-        <div id="visualization"></div>
+        <div id="visualization">
+            <div class="zoom-indicator">
+                <span>缩放级别:</span>
+                <span class="zoom-percent" id="zoom-percent">100%</span>
+            </div>
+        </div>
 
         <div class="info-panel">
             <div class="info-title">日志点颜色方案</div>
@@ -620,7 +647,6 @@
     <div class="tooltip-content" id="tooltip-content"></div>
 </div>
 
-<!-- Hover tooltip -->
 <div class="hover-tooltip" id="hover-tooltip">
     <div class="hover-tooltip-content" id="hover-tooltip-content"></div>
 </div>
@@ -787,12 +813,17 @@
     // 浮窗状态变量
     let pinnedLog = null;
 
-    // 缩放相关变量
+    // 缩放相关变量 - 修改为时间轴缩放
     let zoomLevel = 1;
     const zoomFactor = 0.2;
     let timeScale, yScale;
     let svg, visualizationGroup;
     let processedLogsData = null;
+    let serviceLabelsGroup = null; // 单独存储服务标签组
+
+    // 存储初始时间范围
+    let initialMinTime = 0;
+    let initialMaxTime = 0;
 
     // 初始化
     document.addEventListener('DOMContentLoaded', function() {
@@ -810,6 +841,7 @@
         const zoomInBtn = document.getElementById('zoom-in');
         const zoomOutBtn = document.getElementById('zoom-out');
         const resetZoomBtn = document.getElementById('reset-zoom');
+        const zoomPercent = document.getElementById('zoom-percent');
 
         // 窗口控制按钮
         if (window.electronAPI) {
@@ -881,7 +913,7 @@
         // 获取日志数据
         fetchBtn.addEventListener('click', fetchLogsFromAPI);
 
-        // 缩放控制
+        // 缩放控制 - 修改为时间轴缩放
         zoomInBtn.addEventListener('click', () => zoom(1));
         zoomOutBtn.addEventListener('click', () => zoom(-1));
         resetZoomBtn.addEventListener('click', resetZoom);
@@ -899,25 +931,111 @@
         visualizeLogs(sampleLogs);
     });
 
-    // 缩放功能
+    // 缩放功能 - 修改为时间轴缩放
     function zoom(direction) {
+        const oldZoomLevel = zoomLevel;
         zoomLevel += direction * zoomFactor;
-        zoomLevel = Math.max(0.5, Math.min(zoomLevel, 3)); // 限制缩放范围
-        applyZoom();
+        zoomLevel = Math.max(0.5, Math.min(zoomLevel, 3));
+
+        // 更新缩放百分比显示
+        document.getElementById('zoom-percent').textContent = `${Math.round(zoomLevel * 100)}%`;
+
+        // 重新绘制可视化
+        redrawVisualization();
     }
 
     function resetZoom() {
         zoomLevel = 1;
-        applyZoom();
+        document.getElementById('zoom-percent').textContent = "100%";
+        redrawVisualization();
     }
 
-    function applyZoom() {
-        if (!visualizationGroup) return;
+    // 重新绘制可视化内容
+    function redrawVisualization() {
+        if (!processedLogsData) return;
 
-        visualizationGroup.attr('transform', `scale(${zoomLevel})`);
+        const container = document.getElementById('visualization');
+        container.innerHTML = '<div class="zoom-indicator"><span>缩放级别:</span><span class="zoom-percent" id="zoom-percent">100%</span></div>';
+
+        const margin = {top: 50, right: 30, bottom: 80, left: 200};
+        const width = container.clientWidth - margin.left - margin.right;
+        const height = container.clientHeight - margin.top - margin.bottom;
+
+        // 创建SVG容器
+        svg = d3.select(container)
+            .append('svg')
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom);
+
+        // 创建可视化组
+        visualizationGroup = svg.append('g')
+            .attr('transform', `translate(${margin.left},${margin.top})`);
+
+        // 创建时间轴组
+        const timelineGroup = visualizationGroup.append('g').attr('class', 'timeline-group');
+
+        // 创建服务标签组 - 单独存储
+        serviceLabelsGroup = visualizationGroup.append('g').attr('class', 'service-labels-group');
+
+        // 计算缩放后的时间范围
+        const timeRange = initialMaxTime - initialMinTime;
+        const zoomedMinTime = initialMinTime;
+        const zoomedMaxTime = initialMinTime + timeRange / zoomLevel;
+
+        // 创建时间比例尺
+        timeScale = d3.scaleLinear()
+            .domain([zoomedMinTime, zoomedMaxTime])
+            .range([0, width]);
+
+        // 垂直位置比例尺保持不变
+        yScale = d3.scaleLinear()
+            .domain([0, processedLogsData.maxYPos])
+            .range([20, height - 20]);
+
+        // 添加时间轴行背景
+        const rowHeight = (height - 40) / processedLogsData.maxYPos;
+        for (let i = 0; i <= processedLogsData.maxYPos; i++) {
+            timelineGroup.append('rect')
+                .attr('class', 'timeline-row')
+                .attr('x', 0)
+                .attr('y', yScale(i) - rowHeight/2)
+                .attr('width', width)
+                .attr('height', rowHeight);
+        }
+
+        // 绘制时间轴
+        drawTimeline(timelineGroup, timeScale, height, processedLogsData);
+
+        // 绘制服务标签（保持不变）
+        drawServiceLabels(serviceLabelsGroup, yScale, processedLogsData);
+
+        // 绘制日志点
+        drawLogPoints(visualizationGroup, timeScale, yScale, processedLogsData);
+
+        // 绘制连接线
+        drawConnections(visualizationGroup, timeScale, yScale, processedLogsData);
     }
 
-    // 更新统计显示 - 使用局部统计变量
+    // 绘制服务标签（单独函数）
+    function drawServiceLabels(svg, yScale, data) {
+        // 清空之前的服务标签
+        svg.selectAll('.service-label').remove();
+
+        data.spanMap.forEach(span => {
+            if (span.logs.length > 0) {
+                const yPos = data.verticalPositions.get(span.id) || 0;
+                svg.append('text')
+                    .attr('class', 'service-label')
+                    .attr('x', -10)
+                    .attr('y', yScale(yPos))
+                    .attr('text-anchor', 'end')
+                    .attr('fill', '#aaa')
+                    .text(span.service);
+            }
+        });
+    }
+
+    // 更新统计显示
     function updateStatisticsDisplay(stats) {
         document.getElementById('api-call-count').textContent = apiCallCount;
         document.getElementById('log-count').textContent = stats.logCount;
@@ -1023,16 +1141,8 @@
 
         // 清空之前的可视化
         const container = document.getElementById('visualization');
-        container.innerHTML = '';
+        container.innerHTML = '<div class="zoom-indicator"><span>缩放级别:</span><span class="zoom-percent" id="zoom-percent">100%</span></div>';
 
-        // 处理日志数据 - 返回局部统计变量
-        const { processedLogs, stats } = processLogData(logs);
-        processedLogsData = processedLogs; // 保存处理后的数据用于缩放重绘
-
-        // 更新统计显示
-        updateStatisticsDisplay(stats);
-
-        // 使用D3进行可视化
         const margin = {top: 50, right: 30, bottom: 80, left: 200};
         const width = container.clientWidth - margin.left - margin.right;
         const height = container.clientHeight - margin.top - margin.bottom;
@@ -1050,7 +1160,21 @@
         // 创建时间轴组
         const timelineGroup = visualizationGroup.append('g').attr('class', 'timeline-group');
 
-        // 创建时间比例尺
+        // 创建服务标签组
+        serviceLabelsGroup = visualizationGroup.append('g').attr('class', 'service-labels-group');
+
+        // 处理日志数据
+        const { processedLogs, stats } = processLogData(logs);
+        processedLogsData = processedLogs;
+
+        // 保存初始时间范围
+        initialMinTime = processedLogs.minTime;
+        initialMaxTime = processedLogs.maxTime;
+
+        // 更新统计显示
+        updateStatisticsDisplay(stats);
+
+        // 创建时间比例尺（初始状态）
         timeScale = d3.scaleLinear()
             .domain([processedLogs.minTime, processedLogs.maxTime])
             .range([0, width]);
@@ -1074,14 +1198,21 @@
         // 绘制时间轴
         drawTimeline(timelineGroup, timeScale, height, processedLogs);
 
-        // 绘制日志点（使用防重叠优化）
+        // 绘制服务标签
+        drawServiceLabels(serviceLabelsGroup, yScale, processedLogs);
+
+        // 绘制日志点
         drawLogPoints(visualizationGroup, timeScale, yScale, processedLogs);
 
         // 绘制连接线
         drawConnections(visualizationGroup, timeScale, yScale, processedLogs);
+
+        // 重置缩放级别
+        zoomLevel = 1;
+        document.getElementById('zoom-percent').textContent = "100%";
     }
 
-    // 处理日志数据 - 增加日志类型分类
+    // 处理日志数据
     function processLogData(logs) {
         // 创建局部统计变量
         const stats = {
@@ -1140,8 +1271,8 @@
         const typeColors = {
             "error": "#ff6b6b",
             "warn": "#ffd93d",
-            "request": "#51cf66", // 请求/响应日志为绿色
-            "business": "#4dabf7"  // 业务日志为蓝色
+            "request": "#51cf66",
+            "business": "#4dabf7"
         };
 
         // 构建树结构
@@ -1256,7 +1387,7 @@
         };
     }
 
-    // 创建图例 - 更新为类型图例
+    // 创建图例
     function createLegend(typeColors) {
         const legendContainer = document.getElementById('legend');
         legendContainer.innerHTML = '';
@@ -1281,8 +1412,22 @@
 
     // 绘制时间轴
     function drawTimeline(svg, timeScale, height, data) {
+        // 清空之前的时间轴
+        svg.selectAll('.timeline').remove();
+        svg.selectAll('.time-label').remove();
+        svg.selectAll('.time-title').remove();
+
         // 绘制时间刻度
-        const timeTicks = d3.range(data.minTime, data.maxTime, (data.maxTime - data.minTime) / 10);
+        const timeRange = data.maxTime - data.minTime;
+        const tickInterval = Math.max(50, timeRange / 10); // 最小50ms间隔
+
+        const timeTicks = [];
+        for (let t = data.minTime; t <= data.maxTime; t += tickInterval) {
+            timeTicks.push(t);
+        }
+        if (timeTicks[timeTicks.length - 1] < data.maxTime) {
+            timeTicks.push(data.maxTime);
+        }
 
         svg.selectAll('.timeline')
             .data(timeTicks)
@@ -1322,12 +1467,13 @@
             .text('时间轴（秒.毫秒）');
     }
 
-    // 绘制日志点 - 使用类型颜色（修复颜色分配）
+    // 绘制日志点
     function drawLogPoints(svg, timeScale, yScale, data) {
-        // 检测时间接近的点并错开显示
-        const timeThreshold = 5; // 5毫秒内视为时间接近
+        // 清空之前的日志点
+        svg.selectAll('.log-point').remove();
 
-        // 分组时间接近的点
+        // 检测时间接近的点并错开显示
+        const timeThreshold = 5;
         const timeGroups = new Map();
 
         data.logs.forEach(log => {
@@ -1432,26 +1578,16 @@
                 showFixedTooltip(d);
             });
 
-        // 添加服务标签
-        data.spanMap.forEach(span => {
-            if (span.logs.length > 0) {
-                const yPos = data.verticalPositions.get(span.id) || 0;
-                svg.append('text')
-                    .attr('class', 'service-label')
-                    .attr('x', -10)
-                    .attr('y', yScale(yPos))
-                    .attr('text-anchor', 'end')
-                    .attr('fill', '#aaa')
-                    .text(span.service);
-            }
-        });
-
         // 创建图例
         createLegend(data.typeColors);
     }
 
     // 绘制连接线
     function drawConnections(svg, timeScale, yScale, data) {
+        // 清空之前的连接线
+        svg.selectAll('.connection').remove();
+        svg.selectAll('marker').remove();
+
         const connections = [];
 
         data.spanMap.forEach(childSpan => {
@@ -1507,7 +1643,7 @@
             .attr('stroke', 'none');
     }
 
-    // 显示悬停浮窗（修复位置问题）
+    // 显示悬停浮窗
     function showHoverTooltip(event, log) {
         const hoverTooltip = document.getElementById('hover-tooltip');
         const hoverTooltipContent = document.getElementById('hover-tooltip-content');
@@ -1569,7 +1705,7 @@
         hoverTooltip.style.display = 'none';
     }
 
-    // 显示固定浮窗（修复位置问题）
+    // 显示固定浮窗
     function showFixedTooltip(log) {
         const tooltip = document.getElementById('tooltip');
         const tooltipContent = document.getElementById('tooltip-content');
